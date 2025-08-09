@@ -1,10 +1,14 @@
 package com.appvalence.hayatkurtar.domain.usecase
 
+import android.content.Context
+import android.content.Intent
 import com.appvalence.hayatkurtar.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
 import com.appvalence.hayatkurtar.domain.model.ChatMessage
 import javax.inject.Inject
 import com.appvalence.hayatkurtar.domain.model.DeviceInfo
+import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceDiscoveryService
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 class ScanDevicesUseCase @Inject constructor(private val repo: ChatRepository) {
     suspend operator fun invoke() = repo.scanDevices()
@@ -44,6 +48,20 @@ class IsBluetoothEnabledUseCase @Inject constructor(private val repo: ChatReposi
 
 class ObserveDiscoveredDevicesUseCase @Inject constructor(private val repo: ChatRepository) {
     operator fun invoke(): Flow<List<DeviceInfo>> = repo.observeDiscoveredDevices()
+}
+
+class StartDiscoveryServiceUseCase @Inject constructor(@ApplicationContext private val context: Context) {
+    operator fun invoke() {
+        val i = Intent(context, HighPerformanceDiscoveryService::class.java)
+        context.startForegroundService(i)
+    }
+}
+
+class StopDiscoveryServiceUseCase @Inject constructor(@ApplicationContext private val context: Context) {
+    operator fun invoke() {
+        val i = Intent(context, HighPerformanceDiscoveryService::class.java)
+        context.stopService(i)
+    }
 }
 
 

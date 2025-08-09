@@ -1,6 +1,7 @@
 package com.appvalence.hayatkurtar.data.repository
 
 import com.appvalence.hayatkurtar.data.bluetooth.BluetoothController
+import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceScanner
 import com.appvalence.hayatkurtar.data.crypto.CryptoService
 import com.appvalence.hayatkurtar.data.local.MessageDao
 import com.appvalence.hayatkurtar.data.local.MessageEntity
@@ -11,9 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlinx.coroutines.withTimeoutOrNull
 
 class ChatRepositoryImpl @Inject constructor(
     private val bluetooth: BluetoothController,
+    private val highScanner: HighPerformanceScanner,
     private val dao: MessageDao,
     private val crypto: CryptoService,
 ) : ChatRepository {
@@ -23,9 +26,16 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun scanDevices() {
         val list = mutableListOf<com.appvalence.hayatkurtar.domain.model.DeviceInfo>()
-        bluetooth.startScan().collect { d ->
-            list.add(com.appvalence.hayatkurtar.domain.model.DeviceInfo(d.name, d.address))
-            discoveredDevices.value = list.toList()
+        discoveredDevices.value = emptyList()
+        try {
+            withTimeoutOrNull(15_000) {
+                highScanner.startScan().collect { d ->
+                    list.add(com.appvalence.hayatkurtar.domain.model.DeviceInfo(d.name, d.address))
+                    discoveredDevices.value = list.toList()
+                }
+            }
+        } finally {
+            runCatching { highScanner.stopScan() }
         }
     }
 

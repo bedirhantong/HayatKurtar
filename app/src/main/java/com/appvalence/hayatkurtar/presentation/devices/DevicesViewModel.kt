@@ -6,6 +6,8 @@ import com.appvalence.hayatkurtar.domain.model.DeviceInfo
 import com.appvalence.hayatkurtar.domain.usecase.IsBluetoothEnabledUseCase
 import com.appvalence.hayatkurtar.domain.usecase.ObserveDiscoveredDevicesUseCase
 import com.appvalence.hayatkurtar.domain.usecase.ScanDevicesUseCase
+import com.appvalence.hayatkurtar.domain.usecase.StartDiscoveryServiceUseCase
+import com.appvalence.hayatkurtar.domain.usecase.StopDiscoveryServiceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +22,8 @@ class DevicesViewModel @Inject constructor(
     private val scanDevicesUseCase: ScanDevicesUseCase,
     private val observeDiscoveredDevicesUseCase: ObserveDiscoveredDevicesUseCase,
     private val isBluetoothEnabledUseCase: IsBluetoothEnabledUseCase,
+    private val startDiscoveryService: StartDiscoveryServiceUseCase,
+    private val stopDiscoveryService: StopDiscoveryServiceUseCase,
 ) : ViewModel() {
 
     private val _devices = MutableStateFlow<List<DeviceInfo>>(emptyList())
@@ -46,5 +50,13 @@ class DevicesViewModel @Inject constructor(
             scanDevicesUseCase()
             _isScanning.value = false
         }
+    }
+
+    fun startBackgroundDiscovery() {
+        startDiscoveryService()
+    }
+
+    fun stopBackgroundDiscovery() {
+        stopDiscoveryService()
     }
 }

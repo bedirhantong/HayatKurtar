@@ -38,7 +38,23 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.appvalence.hayatkurtar.presentation.chatdetail.components.TelegramColors
+import android.app.Activity
+import android.companion.AssociationRequest
+import android.companion.BluetoothDeviceFilter
+import android.companion.CompanionDeviceManager
+import android.content.Intent
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import android.bluetooth.BluetoothDevice
+import android.content.IntentSender
+import androidx.annotation.RequiresApi
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceListScreen(
@@ -52,6 +68,8 @@ fun DeviceListScreen(
     val isBtEnabled by viewModel.isBluetoothEnabled.collectAsState()
     val appBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(appBarState)
+
+    val openSystemPicker = rememberSystemBluetoothDeviceChooser(onDeviceSelected)
 
     Scaffold(
         topBar = {
@@ -146,9 +164,13 @@ fun DeviceListScreen(
                             )
                         }
 
-                        // Scan Button
+                        // High performance scan button (Classic + BLE)
                         Button(
-                            onClick = { if (!isScanning) viewModel.scan() },
+                            onClick = {
+                                if (!isScanning) {
+                                    viewModel.scan()
+                                }
+                            },
                             enabled = !isScanning,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = TelegramColors.Primary,
@@ -171,10 +193,7 @@ fun DeviceListScreen(
                                 )
                                 Spacer(Modifier.width(4.dp))
                             }
-                            Text(
-                                text = if (isScanning) "Taranıyor" else "Tara",
-                                fontSize = 14.sp
-                            )
+                            Text(text = if (isScanning) "Taranıyor" else "Gelişmiş Tara", fontSize = 14.sp)
                         }
                     }
                 }
@@ -239,13 +258,71 @@ fun DeviceListScreen(
                             )
 
                             Text(
-                                text = "Yakındaki cihazları bulmak için tara butonuna basın",
+                                text = "Yakındaki cihazları bulmak için Gelişmiş Tara butonuna basın",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TelegramColors.TextSecondary
                             )
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun rememberSystemBluetoothDeviceChooser(
+    onDeviceSelected: (address: String) -> Unit,
+): () -> Unit {
+    val context = LocalContext.current
+
+    val intentSenderLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val device: BluetoothDevice? = if (Build.VERSION.SDK_INT >= 33) {
+                data?.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE, BluetoothDevice::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                data?.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE)
+            }
+            val address = device?.address
+            if (!address.isNullOrBlank()) {
+                onDeviceSelected(address)
+            }
+        }
+    }
+
+    return remember {
+        {
+            val cdm = ContextCompat.getSystemService(context, CompanionDeviceManager::class.java)
+
+            if (cdm != null) {
+                val filter = BluetoothDeviceFilter.Builder()
+                    .build()
+
+                val request = AssociationRequest.Builder()
+                    .addDeviceFilter(filter)
+                    .setSingleDevice(true)
+                    .build()
+
+                cdm.associate(
+                    request,
+                    object : CompanionDeviceManager.Callback() {
+                        override fun onDeviceFound(chooserLauncher: IntentSender) {
+                            intentSenderLauncher.launch(
+                                IntentSenderRequest.Builder(chooserLauncher).build()
+                            )
+                        }
+
+                        override fun onFailure(error: CharSequence?) {
+                            // no-op
+                        }
+                    },
+                    null
+                )
             }
         }
     }

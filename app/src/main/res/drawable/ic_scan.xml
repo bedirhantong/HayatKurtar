@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Scan frame corners -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3,3 H7 V5 H5 V7 H3 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M17,3 H21 V7 H19 V5 H17 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3,17 H5 V19 H7 V21 H3 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M19,17 H21 V21 H17 V19 H19 Z" />
+
+    <!-- Center scan dot -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,10 a2,2 0 1,0 0,4 a2,2 0 1,0 0,-4" />
+
+</vector>
+
+
