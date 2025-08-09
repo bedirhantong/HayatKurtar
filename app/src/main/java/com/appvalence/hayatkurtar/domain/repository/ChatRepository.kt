@@ -7,6 +7,7 @@ import com.appvalence.hayatkurtar.domain.model.DeviceInfo
 interface ChatRepository {
     suspend fun scanDevices()
     fun observeDiscoveredDevices(): Flow<List<DeviceInfo>>
+    fun recalculateDiscoveredDistances()
     suspend fun connectFirstAvailable(): Boolean
     suspend fun connect(address: String): Boolean
     suspend fun disconnect()

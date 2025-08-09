@@ -2,6 +2,7 @@ package com.appvalence.hayatkurtar.data.repository
 
 import com.appvalence.hayatkurtar.data.bluetooth.BluetoothController
 import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceScanner
+import com.appvalence.hayatkurtar.data.bluetooth.DistanceEstimator
 import com.appvalence.hayatkurtar.data.crypto.CryptoService
 import com.appvalence.hayatkurtar.data.local.MessageDao
 import com.appvalence.hayatkurtar.data.local.MessageEntity
@@ -13,12 +14,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class ChatRepositoryImpl @Inject constructor(
     private val bluetooth: BluetoothController,
     private val highScanner: HighPerformanceScanner,
     private val dao: MessageDao,
     private val crypto: CryptoService,
+    private val distanceEstimator: DistanceEstimator,
 ) : ChatRepository {
 
     private val discoveredDevices = MutableStateFlow<List<com.appvalence.hayatkurtar.domain.model.DeviceInfo>>(emptyList())
@@ -28,9 +32,18 @@ class ChatRepositoryImpl @Inject constructor(
         val list = mutableListOf<com.appvalence.hayatkurtar.domain.model.DeviceInfo>()
         discoveredDevices.value = emptyList()
         try {
-            withTimeoutOrNull(15_000) {
+            withTimeoutOrNull(25_000) {
                 highScanner.startScan().collect { d ->
-                    list.add(com.appvalence.hayatkurtar.domain.model.DeviceInfo(d.name, d.address))
+                    val distance = distanceEstimator.estimateDistanceMeters(d.address, d.rssi, d.txPower)
+                    list.add(
+                        com.appvalence.hayatkurtar.domain.model.DeviceInfo(
+                            name = d.name,
+                            address = d.address,
+                            rssi = d.rssi,
+                            txPower = d.txPower,
+                            estimatedDistanceMeters = distance
+                        )
+                    )
                     discoveredDevices.value = list.toList()
                 }
             }
@@ -38,6 +51,8 @@ class ChatRepositoryImpl @Inject constructor(
             runCatching { highScanner.stopScan() }
         }
     }
+
+    
 
     override suspend fun connectFirstAvailable(): Boolean {
         val address = bluetooth.findFirstAvailable() ?: return false
@@ -93,6 +108,16 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun deleteChatByPeer(peer: String) {
         dao.deleteByPeer(peer)
+    }
+
+    override fun recalculateDiscoveredDistances() {
+        val current = discoveredDevices.value
+        if (current.isEmpty()) return
+        val updated = current.map { d ->
+            val newDist = distanceEstimator.estimateDistanceMeters(d.address, d.rssi, d.txPower)
+            d.copy(estimatedDistanceMeters = newDist)
+        }
+        discoveredDevices.value = updated
     }
 }
 

@@ -90,6 +90,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
+    // DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
     // Crypto & Keystore helpers
     implementation("androidx.security:security-crypto:$securityCryptoVersion")
     implementation("com.google.crypto.tink:tink-android:$tinkAndroidVersion")

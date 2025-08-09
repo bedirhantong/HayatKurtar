@@ -2,7 +2,12 @@ package com.appvalence.hayatkurtar.data.bluetooth
 
 import kotlinx.coroutines.flow.Flow
 
-data class DiscoveredDevice(val name: String?, val address: String)
+data class DiscoveredDevice(
+    val name: String?,
+    val address: String,
+    val rssi: Int? = null,
+    val txPower: Int? = null,
+)
 
 interface BluetoothController {
     suspend fun startScan(): Flow<DiscoveredDevice>

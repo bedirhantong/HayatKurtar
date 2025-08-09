@@ -9,6 +9,7 @@ import javax.inject.Inject
 import com.appvalence.hayatkurtar.domain.model.DeviceInfo
 import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceDiscoveryService
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.appvalence.hayatkurtar.data.bluetooth.DistanceEstimator
 
 class ScanDevicesUseCase @Inject constructor(private val repo: ChatRepository) {
     suspend operator fun invoke() = repo.scanDevices()
@@ -62,6 +63,18 @@ class StopDiscoveryServiceUseCase @Inject constructor(@ApplicationContext privat
         val i = Intent(context, HighPerformanceDiscoveryService::class.java)
         context.stopService(i)
     }
+}
+
+class UpdateDistanceCalibrationUseCase @Inject constructor(
+    private val estimator: DistanceEstimator
+) {
+    operator fun invoke(measuredPowerDefault: Int? = null, pathLossExponent: Double? = null, smoothingAlpha: Double? = null) {
+        estimator.updateCalibration(measuredPowerDefault, pathLossExponent, smoothingAlpha)
+    }
+}
+
+class RecalculateDiscoveredDistancesUseCase @Inject constructor(private val repo: ChatRepository) {
+    operator fun invoke() = repo.recalculateDiscoveredDistances()
 }
 
 

@@ -7,8 +7,13 @@ import com.appvalence.hayatkurtar.data.bluetooth.BluetoothController
 import com.appvalence.hayatkurtar.data.crypto.CryptoService
 import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceScanner
 import com.appvalence.hayatkurtar.data.bluetooth.AndroidHighPerformanceScanner
+import com.appvalence.hayatkurtar.data.bluetooth.DistanceEstimator
+import com.appvalence.hayatkurtar.data.bluetooth.RssiDistanceEstimator
+import com.appvalence.hayatkurtar.data.bluetooth.BleAdvertiser
+import com.appvalence.hayatkurtar.data.bluetooth.AndroidBleAdvertiser
 import com.appvalence.hayatkurtar.data.local.AppDatabase
 import com.appvalence.hayatkurtar.data.local.MessageDao
+import com.appvalence.hayatkurtar.data.local.CalibrationStore
 import com.appvalence.hayatkurtar.data.repository.ChatRepositoryImpl
 import com.appvalence.hayatkurtar.domain.repository.ChatRepository
 import dagger.Module
@@ -44,6 +49,18 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideDistanceEstimator(): DistanceEstimator = RssiDistanceEstimator()
+
+    @Provides
+    @Singleton
+    fun provideCalibrationStore(@ApplicationContext context: Context): CalibrationStore = CalibrationStore(context)
+
+    @Provides
+    @Singleton
+    fun provideBleAdvertiser(@ApplicationContext context: Context): BleAdvertiser = AndroidBleAdvertiser(context)
+
+    @Provides
+    @Singleton
     fun provideCrypto(@ApplicationContext context: Context): CryptoService = CryptoService(context)
 
     @Provides
@@ -51,9 +68,16 @@ object AppModule {
     fun provideRepository(
         bluetoothController: BluetoothController,
         highPerformanceScanner: HighPerformanceScanner,
+        distanceEstimator: DistanceEstimator,
         dao: MessageDao,
         crypto: CryptoService,
-    ): ChatRepository = ChatRepositoryImpl(bluetoothController, highPerformanceScanner, dao, crypto)
+    ): ChatRepository = ChatRepositoryImpl(
+        bluetoothController,
+        highPerformanceScanner,
+        dao,
+        crypto,
+        distanceEstimator,
+    )
 }
 
 

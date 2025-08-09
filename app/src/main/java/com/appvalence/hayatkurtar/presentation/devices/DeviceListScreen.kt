@@ -48,11 +48,16 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import android.bluetooth.BluetoothDevice
 import android.content.IntentSender
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +75,19 @@ fun DeviceListScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(appBarState)
 
     val openSystemPicker = rememberSystemBluetoothDeviceChooser(onDeviceSelected)
+    val showCalibration = rememberSaveable { mutableStateOf(false) }
+    val measuredPowerState = rememberSaveable { mutableStateOf(-59f) }
+    val pathLossState = rememberSaveable { mutableStateOf(2.0f) }
+    val alphaState = rememberSaveable { mutableStateOf(0.5f) }
+    val showCompletion = rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(isScanning, devices) {
+        if (!isScanning && devices.isNotEmpty()) {
+            showCompletion.value = true
+            delay(2000)
+            showCompletion.value = false
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -95,26 +113,20 @@ fun DeviceListScreen(
                         )
                     },
                     actions = {
-                        // Settings Button
+                        // Calibration Button
                         OutlinedButton(
-                            onClick = onOpenSettings,
+                            onClick = { showCalibration.value = true },
                             modifier = Modifier
-                                .semantics { contentDescription = "Ayarlar" }
-                                .padding(end = 4.dp),
+                                .semantics { contentDescription = "Kalibrasyon" }
+                                .padding(end = 8.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = TelegramColors.Primary
                             ),
-                            border = ButtonDefaults.outlinedButtonBorder.copy(
-                                width = 1.dp
-                            )
+                            border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp)
                         ) {
-                            Icon(
-                                Icons.Default.Settings,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
+                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Ayarlar", fontSize = 14.sp)
+                            Text("Kalibrasyon", fontSize = 14.sp)
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -203,6 +215,38 @@ fun DeviceListScreen(
                     color = TelegramColors.Divider.copy(alpha = 0.3f)
                 )
 
+                // Live scan status banner
+                AnimatedVisibility(visible = isScanning) {
+                    Surface(color = TelegramColors.Background) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            LinearProgressIndicator(modifier = Modifier.weight(1f))
+                            Text(text = "Taranıyor… Bulunan: ${devices.size}")
+                        }
+                    }
+                }
+
+                // Scan completed banner
+                AnimatedVisibility(visible = showCompletion.value && !isScanning) {
+                    Surface(color = TelegramColors.Background) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = TelegramColors.Primary)
+                            Text(text = "Tarama tamamlandı. Bulunan: ${devices.size}")
+                        }
+                    }
+                }
+
                 // Devices List
                 AnimatedVisibility(
                     visible = devices.isNotEmpty(),
@@ -217,7 +261,7 @@ fun DeviceListScreen(
                     ) {
                         items(devices, key = { it.address }) { device ->
                             DeviceListItem(
-                                name = device.name ?: "Bilinmeyen Cihaz",
+                                name = device.name ?: device.address,
                                 address = device.address,
                                 onClick = { onDeviceSelected(device.address) }
                             )
@@ -267,6 +311,21 @@ fun DeviceListScreen(
                 }
             }
         }
+    }
+    if (showCalibration.value) {
+        CalibrationDialog(
+            measuredPower = measuredPowerState.value,
+            pathLoss = pathLossState.value,
+            alpha = alphaState.value,
+            onDismiss = { showCalibration.value = false },
+            onApply = { mp, n, a ->
+                measuredPowerState.value = mp
+                pathLossState.value = n
+                alphaState.value = a
+                viewModel.calibrate(mp.toInt(), n.toDouble(), a.toDouble())
+                showCalibration.value = false
+            }
+        )
     }
 }
 
@@ -329,6 +388,44 @@ private fun rememberSystemBluetoothDeviceChooser(
 }
 
 @Composable
+private fun CalibrationDialog(
+    measuredPower: Float,
+    pathLoss: Float,
+    alpha: Float,
+    onDismiss: () -> Unit,
+    onApply: (Float, Float, Float) -> Unit,
+) {
+    var mp = rememberSaveable { mutableStateOf(measuredPower) }
+    var n = rememberSaveable { mutableStateOf(pathLoss) }
+    var a = rememberSaveable { mutableStateOf(alpha) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = { onApply(mp.value, n.value, a.value) }) {
+                Text("Uygula")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("İptal") }
+        },
+        title = { Text("Mesafe Kalibrasyonu") },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text("1 m RSSI (measuredPower): ${mp.value.toInt()} dBm")
+                Slider(value = mp.value, onValueChange = { mp.value = it }, valueRange = -90f..-30f)
+                Spacer(Modifier.height(8.dp))
+                Text("Yayılım katsayısı n: ${String.format("%.2f", n.value)}")
+                Slider(value = n.value, onValueChange = { n.value = it }, valueRange = 1.5f..4.0f)
+                Spacer(Modifier.height(8.dp))
+                Text("Yumuşatma (alpha): ${String.format("%.2f", a.value)}")
+                Slider(value = a.value, onValueChange = { a.value = it }, valueRange = 0.0f..1.0f)
+            }
+        }
+    )
+}
+
+@Composable
 fun DeviceListItem(name: String, address: String, onClick: () -> Unit) {
     Surface(
         color = TelegramColors.Background,
@@ -351,7 +448,7 @@ fun DeviceListItem(name: String, address: String, onClick: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    Icons.Default.ArrowForward,
+                    painter = androidx.compose.ui.res.painterResource(id = com.appvalence.hayatkurtar.R.drawable.ic_bluetooth),
                     contentDescription = null,
                     tint = TelegramColors.Primary,
                     modifier = Modifier.size(24.dp)
@@ -384,24 +481,7 @@ fun DeviceListItem(name: String, address: String, onClick: () -> Unit) {
                 )
             }
 
-            // Connect Button
-            OutlinedButton(
-                onClick = onClick,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = TelegramColors.Primary
-                ),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    width = 1.dp
-                ),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = "Bağlan",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            // Tap anywhere to open chat; no extra button
         }
     }
 }

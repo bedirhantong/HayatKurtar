@@ -7,10 +7,12 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -34,7 +36,7 @@ class AndroidHighPerformanceScanner(
             return@callbackFlow
         }
 
-        val seen = mutableSetOf<String>()
+        val seen = LinkedHashMap<String, DiscoveredDevice>()
 
         // Classic discovery receiver
         val receiver = object : BroadcastReceiver() {
@@ -44,9 +46,10 @@ class AndroidHighPerformanceScanner(
                         val device: BluetoothDevice? =
                             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                         val address = device?.address ?: return
-                        if (seen.add(address)) {
-                            trySend(DiscoveredDevice(device.name, address))
-                        }
+                        val item = DiscoveredDevice(device?.name, address)
+                        val wasNew = !seen.containsKey(address)
+                        seen[address] = item
+                        if (wasNew) trySend(item)
                     }
                 }
             }
@@ -71,24 +74,38 @@ class AndroidHighPerformanceScanner(
         val callback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 val address = result.device?.address ?: return
-                if (seen.add(address)) {
-                    val name = result.device?.name ?: result.scanRecord?.deviceName
-                    trySend(DiscoveredDevice(name, address))
-                }
+                val name = result.device?.name
+                    ?: result.scanRecord?.deviceName
+                    ?: result.scanRecord?.deviceName.takeUnless { it.isNullOrBlank() }
+                val rssi = result.rssi
+                val tx = if (Build.VERSION.SDK_INT >= 26) result.txPower else null
+                val item = DiscoveredDevice(name, address, rssi = rssi, txPower = tx)
+                val wasNew = !seen.containsKey(address)
+                seen[address] = item
+                if (wasNew) trySend(item)
             }
 
             override fun onBatchScanResults(results: MutableList<ScanResult>) {
                 for (r in results) {
                     val address = r.device?.address ?: continue
-                    if (seen.add(address)) {
-                        val name = r.device?.name ?: r.scanRecord?.deviceName
-                        trySend(DiscoveredDevice(name, address))
-                    }
+                    val name = r.device?.name
+                        ?: r.scanRecord?.deviceName
+                        ?: r.scanRecord?.deviceName.takeUnless { it.isNullOrBlank() }
+                    val rssi = r.rssi
+                    val tx = if (Build.VERSION.SDK_INT >= 26) r.txPower else null
+                    val item = DiscoveredDevice(name, address, rssi = rssi, txPower = tx)
+                    val wasNew = !seen.containsKey(address)
+                    seen[address] = item
+                    if (wasNew) trySend(item)
                 }
             }
         }
         leCallback = callback
-        runCatching { scanner?.startScan(callback) }
+        // Use aggressive/low-latency scan mode to discover faster
+        val settings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
+        runCatching { scanner?.startScan(null, settings, callback) }
 
         awaitClose {
             runCatching { localAdapter.cancelDiscovery() }

@@ -1,6 +1,8 @@
 package com.appvalence.hayatkurtar
 
 import android.os.Bundle
+import android.content.Intent
+import android.bluetooth.BluetoothAdapter
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,5 +26,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    fun makeDiscoverable(durationSec: Int = 120) {
+        val discoverableIntent: Intent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+            putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, durationSec)
+        }
+        startActivity(discoverableIntent)
     }
 }

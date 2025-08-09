@@ -32,7 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Divider
+import androidx.compose.material3.OutlinedButton
 import com.appvalence.hayatkurtar.presentation.chatdetail.components.TelegramColors
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +45,8 @@ fun ChatListScreen(
     viewModel: ChatListViewModel = hiltViewModel(),
 ) {
     val chats = viewModel.chats.collectAsState().value
+    val localName = viewModel.localDeviceName.collectAsState().value
+    val context = LocalContext.current
     val appBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(appBarState)
     val menuExpanded = remember { mutableStateOf(false) }
@@ -64,24 +69,29 @@ fun ChatListScreen(
                         )
                     },
                     actions = {
-                        IconButton(onClick = { menuExpanded.value = true }) {
-                            Icon(
-                                Icons.Default.MoreVert,
-                                contentDescription = null,
-                                tint = TelegramColors.TextSecondary
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = menuExpanded.value,
-                            onDismissRequest = { menuExpanded.value = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Tara") },
-                                onClick = {
-                                    menuExpanded.value = false
-                                    onScan()
-                                }
-                            )
+                        // Quick Scan action to boost user feel
+                        if (localName.isNotBlank()) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    localName,
+                                    color = TelegramColors.TextSecondary,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                val advertising = viewModel.isAdvertising.collectAsState().value
+                                androidx.compose.material3.Switch(
+                                    checked = advertising,
+                                    onCheckedChange = { checked ->
+                                        if (checked) {
+                                            // Start BLE advertising and request Classic discoverable
+                                            viewModel.enableVisibility()
+                                            (context as? com.appvalence.hayatkurtar.MainActivity)?.makeDiscoverable(120)
+                                        } else {
+                                            viewModel.disableVisibility()
+                                        }
+                                    }
+                                )
+                            }
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -90,6 +100,16 @@ fun ChatListScreen(
                         scrolledContainerColor = TelegramColors.Background
                     )
                 )
+            }
+        },
+        floatingActionButton =  {
+            OutlinedButton(onClick = onScan) {
+                Icon(
+                    painter = painterResource(id = com.appvalence.hayatkurtar.R.drawable.ic_scan),
+                    contentDescription = null,
+                )
+                Spacer(Modifier.width(6.dp))
+                Text("Diğer cihazları keşfet")
             }
         },
         containerColor = TelegramColors.Background
@@ -106,6 +126,13 @@ fun ChatListScreen(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Icon(
+                        painter = painterResource(id = com.appvalence.hayatkurtar.R.drawable.ic_scan),
+                        contentDescription = null,
+                        tint = TelegramColors.Primary,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     // Empty state text
                     Text(
                         text = "Henüz sohbet yok",
@@ -123,10 +150,6 @@ fun ChatListScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = TelegramColors.TextSecondary
                     )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    ScanButton(onClick = onScan)
                 }
             }
         } else {
