@@ -1,0 +1,51 @@
+package com.appvalence.hayatkurtar.di
+
+import android.content.Context
+import androidx.room.Room
+import com.appvalence.hayatkurtar.data.bluetooth.AndroidBluetoothController
+import com.appvalence.hayatkurtar.data.bluetooth.BluetoothController
+import com.appvalence.hayatkurtar.data.crypto.CryptoService
+import com.appvalence.hayatkurtar.data.local.AppDatabase
+import com.appvalence.hayatkurtar.data.local.MessageDao
+import com.appvalence.hayatkurtar.data.repository.ChatRepositoryImpl
+import com.appvalence.hayatkurtar.domain.repository.ChatRepository
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "hk.db")
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    fun provideMessageDao(db: AppDatabase): MessageDao = db.messageDao()
+
+    @Provides
+    @Singleton
+    fun provideBluetoothController(@ApplicationContext context: Context): BluetoothController =
+        AndroidBluetoothController(context)
+
+    @Provides
+    @Singleton
+    fun provideCrypto(@ApplicationContext context: Context): CryptoService = CryptoService(context)
+
+    @Provides
+    @Singleton
+    fun provideRepository(
+        bluetoothController: BluetoothController,
+        dao: MessageDao,
+        crypto: CryptoService,
+    ): ChatRepository = ChatRepositoryImpl(bluetoothController, dao, crypto)
+}
+
+

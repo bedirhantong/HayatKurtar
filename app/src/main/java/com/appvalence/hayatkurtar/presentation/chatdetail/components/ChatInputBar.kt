@@ -1,0 +1,78 @@
+package com.appvalence.hayatkurtar.presentation.chatdetail.components
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun ChatInputBar(
+    input: String,
+    onInputChange: (String) -> Unit,
+    onSend: () -> Unit,
+    isConnected: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        color = TelegramColors.Background,
+        shadowElevation = 8.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            OutlinedTextField(
+                value = input,
+                onValueChange = onInputChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                placeholder = { Text(text = "Mesaj...", color = TelegramColors.TextSecondary) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedContainerColor = TelegramColors.InputBackground,
+                    unfocusedContainerColor = TelegramColors.InputBackground
+                ),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+                maxLines = 5,
+                textStyle = MaterialTheme.typography.bodyMedium
+            )
+
+            AnimatedVisibility(
+                visible = input.isNotBlank() && isConnected,
+                enter = scaleIn() + fadeIn(),
+                exit = scaleOut() + fadeOut()
+            ) {
+                IconButton(
+                    onClick = onSend,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(color = TelegramColors.Primary, shape = CircleShape)
+                        .semantics { contentDescription = "Gönder" }
+                ) {
+                    Icon(imageVector = Icons.Default.Send, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                }
+            }
+        }
+    }
+}
+
+

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HayatKurtar</string>
+    <string name="permission_required">Bluetooth izinlerine ihtiyaç var</string>
+</resources>
