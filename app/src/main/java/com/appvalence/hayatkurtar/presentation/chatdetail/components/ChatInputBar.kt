@@ -56,20 +56,24 @@ fun ChatInputBar(
                 textStyle = MaterialTheme.typography.bodyMedium
             )
 
-            AnimatedVisibility(
-                visible = input.isNotBlank() && isConnected,
-                enter = scaleIn() + fadeIn(),
-                exit = scaleOut() + fadeOut()
+            val canSend = input.isNotBlank() && isConnected
+            IconButton(
+                onClick = onSend,
+                enabled = canSend,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = if (canSend) TelegramColors.Primary else TelegramColors.Primary.copy(alpha = 0.4f),
+                        shape = CircleShape
+                    )
+                    .semantics { contentDescription = "Gönder" }
             ) {
-                IconButton(
-                    onClick = onSend,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(color = TelegramColors.Primary, shape = CircleShape)
-                        .semantics { contentDescription = "Gönder" }
-                ) {
-                    Icon(imageVector = Icons.Default.Send, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
-                }
+                Icon(
+                    imageVector = Icons.Default.Send,
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = if (canSend) 1f else 0.7f),
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }

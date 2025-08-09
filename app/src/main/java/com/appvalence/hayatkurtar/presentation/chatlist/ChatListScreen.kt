@@ -28,11 +28,14 @@ import com.appvalence.hayatkurtar.presentation.chatlist.components.ChatListItem
 import com.appvalence.hayatkurtar.presentation.chatlist.components.ScanButton
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.background
+import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Divider
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import com.appvalence.hayatkurtar.presentation.chatdetail.components.TelegramColors
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +50,11 @@ fun ChatListScreen(
     val chats = viewModel.chats.collectAsState().value
     val localName = viewModel.localDeviceName.collectAsState().value
     val context = LocalContext.current
+    val isBtEnabled = viewModel.isBluetoothEnabled.collectAsState().value
+    val promptShown = viewModel.promptShown.collectAsState().value
+    val autoVisibility = viewModel.autoVisibility.collectAsState().value
+    val isAdvertising = viewModel.isAdvertising.collectAsState().value
+    val showDiscoverableDialog = remember { mutableStateOf(false) }
     val appBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(appBarState)
     val menuExpanded = remember { mutableStateOf(false) }
@@ -78,14 +86,13 @@ fun ChatListScreen(
                                     style = MaterialTheme.typography.bodySmall
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                val advertising = viewModel.isAdvertising.collectAsState().value
                                 androidx.compose.material3.Switch(
-                                    checked = advertising,
+                                    checked = isAdvertising,
                                     onCheckedChange = { checked ->
                                         if (checked) {
                                             // Start BLE advertising and request Classic discoverable
                                             viewModel.enableVisibility()
-                                            (context as? com.appvalence.hayatkurtar.MainActivity)?.makeDiscoverable(120)
+                                            (context as? com.appvalence.hayatkurtar.MainActivity)?.makeDiscoverable(300)
                                         } else {
                                             viewModel.disableVisibility()
                                         }
@@ -181,5 +188,47 @@ fun ChatListScreen(
                 }
             }
         }
+    }
+
+    // Enforce discoverable after Bluetooth enabled
+    LaunchedEffect(isBtEnabled, promptShown, isAdvertising) {
+        if (isBtEnabled && !promptShown && !isAdvertising) {
+            // Prompt only if not already advertising and not shown before
+            showDiscoverableDialog.value = true
+        }
+    }
+
+    if (showDiscoverableDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDiscoverableDialog.value = false },
+            title = { Text("Keşfedilebilirliği Açın") },
+            text = {
+                Column {
+                    Text("Uygulamanın yakınınızdaki kişileri hızlı ve güvenilir biçimde bulabilmesi için Bluetooth keşfedilebilirliğini açık tutmanız önerilir. Kapatırsanız performans etkilenebilir.")
+                    Spacer(Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        val auto = remember { mutableStateOf(true) }
+                        androidx.compose.material3.Checkbox(checked = auto.value, onCheckedChange = { auto.value = it })
+                        Text("Her açılışta otomatik görünür yap")
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDiscoverableDialog.value = false
+                    (context as? com.appvalence.hayatkurtar.MainActivity)?.makeDiscoverable(300)
+                    viewModel.enableVisibility()
+                    viewModel.saveAutoVisibilityPreference(true)
+                    viewModel.markDiscoverablePromptShown()
+                }) { Text("Aç (Önerilen)") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDiscoverableDialog.value = false
+                    viewModel.saveAutoVisibilityPreference(false)
+                    viewModel.markDiscoverablePromptShown()
+                }) { Text("Daha sonra") }
+            }
+        )
     }
 }

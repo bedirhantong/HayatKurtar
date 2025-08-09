@@ -14,6 +14,7 @@ import com.appvalence.hayatkurtar.data.bluetooth.AndroidBleAdvertiser
 import com.appvalence.hayatkurtar.data.local.AppDatabase
 import com.appvalence.hayatkurtar.data.local.MessageDao
 import com.appvalence.hayatkurtar.data.local.CalibrationStore
+import com.appvalence.hayatkurtar.data.local.UserPrefsStore
 import com.appvalence.hayatkurtar.data.repository.ChatRepositoryImpl
 import com.appvalence.hayatkurtar.domain.repository.ChatRepository
 import dagger.Module
@@ -58,6 +59,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBleAdvertiser(@ApplicationContext context: Context): BleAdvertiser = AndroidBleAdvertiser(context)
+
+    @Provides
+    @Singleton
+    fun provideUserPrefsStore(@ApplicationContext context: Context): UserPrefsStore = UserPrefsStore(context)
 
     @Provides
     @Singleton
