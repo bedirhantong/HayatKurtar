@@ -9,7 +9,7 @@ import javax.inject.Inject
 import com.appvalence.hayatkurtar.domain.model.DeviceInfo
 import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceDiscoveryService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import com.appvalence.hayatkurtar.data.bluetooth.DistanceEstimator
+import com.appvalence.bluetooth.api.DistanceEstimator
 
 class ScanDevicesUseCase @Inject constructor(private val repo: ChatRepository) {
     suspend operator fun invoke() = repo.scanDevices()
@@ -77,7 +77,7 @@ class RecalculateDiscoveredDistancesUseCase @Inject constructor(private val repo
     operator fun invoke() = repo.recalculateDiscoveredDistances()
 }
 
-class ObserveConnectionStateUseCase @Inject constructor(private val repo: ChatRepository, private val bluetoothController: com.appvalence.hayatkurtar.data.bluetooth.BluetoothController) {
+class ObserveConnectionStateUseCase @Inject constructor(private val repo: ChatRepository, private val bluetoothController: com.appvalence.bluetooth.api.BluetoothController) {
     operator fun invoke(): Flow<Boolean> = bluetoothController.observeConnectionState()
 }
 

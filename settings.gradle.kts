@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "HayatKurtar"
 include(":app")
+include(":bluetooth")

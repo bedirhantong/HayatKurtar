@@ -1,8 +1,8 @@
 package com.appvalence.hayatkurtar.data.repository
 
-import com.appvalence.hayatkurtar.data.bluetooth.BluetoothController
-import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceScanner
-import com.appvalence.hayatkurtar.data.bluetooth.DistanceEstimator
+import com.appvalence.bluetooth.api.BluetoothController
+import com.appvalence.bluetooth.api.HighPerformanceScanner
+import com.appvalence.bluetooth.api.DistanceEstimator
 import com.appvalence.hayatkurtar.data.crypto.CryptoService
 import com.appvalence.hayatkurtar.data.local.MessageDao
 import com.appvalence.hayatkurtar.data.local.MessageEntity

@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.appvalence.hayatkurtar.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.appvalence.bluetooth.api.HighPerformanceScanner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

@@ -9,7 +9,7 @@ import com.appvalence.hayatkurtar.domain.usecase.ObserveMessagesUseCase
 import com.appvalence.hayatkurtar.domain.usecase.DeleteChatByPeerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.appvalence.hayatkurtar.domain.usecase.IsBluetoothEnabledUseCase
-import com.appvalence.hayatkurtar.data.bluetooth.BleAdvertiser
+import com.appvalence.bluetooth.api.BleAdvertiser
 import android.bluetooth.BluetoothAdapter
 import android.os.Build
 import kotlinx.coroutines.flow.MutableStateFlow

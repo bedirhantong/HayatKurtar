@@ -2,15 +2,11 @@ package com.appvalence.hayatkurtar.di
 
 import android.content.Context
 import androidx.room.Room
-import com.appvalence.hayatkurtar.data.bluetooth.AndroidBluetoothController
-import com.appvalence.hayatkurtar.data.bluetooth.BluetoothController
+import com.appvalence.bluetooth.api.BluetoothController
 import com.appvalence.hayatkurtar.data.crypto.CryptoService
-import com.appvalence.hayatkurtar.data.bluetooth.HighPerformanceScanner
-import com.appvalence.hayatkurtar.data.bluetooth.AndroidHighPerformanceScanner
-import com.appvalence.hayatkurtar.data.bluetooth.DistanceEstimator
-import com.appvalence.hayatkurtar.data.bluetooth.RssiDistanceEstimator
-import com.appvalence.hayatkurtar.data.bluetooth.BleAdvertiser
-import com.appvalence.hayatkurtar.data.bluetooth.AndroidBleAdvertiser
+import com.appvalence.bluetooth.api.HighPerformanceScanner
+import com.appvalence.bluetooth.api.DistanceEstimator
+import com.appvalence.bluetooth.api.BleAdvertiser
 import com.appvalence.hayatkurtar.data.local.AppDatabase
 import com.appvalence.hayatkurtar.data.local.MessageDao
 import com.appvalence.hayatkurtar.data.local.CalibrationStore
@@ -38,27 +34,13 @@ object AppModule {
     @Provides
     fun provideMessageDao(db: AppDatabase): MessageDao = db.messageDao()
 
-    @Provides
-    @Singleton
-    fun provideBluetoothController(@ApplicationContext context: Context): BluetoothController =
-        AndroidBluetoothController(context)
-
-    @Provides
-    @Singleton
-    fun provideHighPerformanceScanner(@ApplicationContext context: Context): HighPerformanceScanner =
-        AndroidHighPerformanceScanner(context)
-
-    @Provides
-    @Singleton
-    fun provideDistanceEstimator(): DistanceEstimator = RssiDistanceEstimator()
+    // Provided by :bluetooth module
 
     @Provides
     @Singleton
     fun provideCalibrationStore(@ApplicationContext context: Context): CalibrationStore = CalibrationStore(context)
 
-    @Provides
-    @Singleton
-    fun provideBleAdvertiser(@ApplicationContext context: Context): BleAdvertiser = AndroidBleAdvertiser(context)
+    // Provided by :bluetooth module
 
     @Provides
     @Singleton

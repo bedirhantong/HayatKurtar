@@ -100,6 +100,8 @@ dependencies {
     implementation("androidx.security:security-crypto:$securityCryptoVersion")
     implementation("com.google.crypto.tink:tink-android:$tinkAndroidVersion")
 
+    implementation(project(":bluetooth"))
+
     // Test
     testImplementation("junit:junit:${project.findProperty("junitVersion")}")
     androidTestImplementation("androidx.test.ext:junit:${project.findProperty("androidxTestExtJunitVersion")}")
