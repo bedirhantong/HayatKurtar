@@ -77,4 +77,8 @@ class RecalculateDiscoveredDistancesUseCase @Inject constructor(private val repo
     operator fun invoke() = repo.recalculateDiscoveredDistances()
 }
 
+class ObserveConnectionStateUseCase @Inject constructor(private val repo: ChatRepository, private val bluetoothController: com.appvalence.hayatkurtar.data.bluetooth.BluetoothController) {
+    operator fun invoke(): Flow<Boolean> = bluetoothController.observeConnectionState()
+}
+
 

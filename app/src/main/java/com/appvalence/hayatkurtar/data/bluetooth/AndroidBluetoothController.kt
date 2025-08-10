@@ -11,6 +11,8 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import java.io.InputStream
 import java.io.OutputStream
@@ -34,9 +36,11 @@ class AndroidBluetoothController(
     // RFCOMM (SPP) messaging
     private val sppUuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var serverJob: Job? = null
+    private var insecureServerJob: Job? = null
     @Volatile private var currentIn: InputStream? = null
     @Volatile private var currentOut: OutputStream? = null
     @Volatile private var currentDeviceAddress: String? = null
+    private val connectionState = MutableStateFlow(false)
 
     override suspend fun startScan(): Flow<DiscoveredDevice> = callbackFlow {
         val localAdapter = adapter ?: run {
@@ -112,10 +116,29 @@ class AndroidBluetoothController(
             val device: BluetoothDevice = localAdapter.getRemoteDevice(address)
             // Ensure discovery is stopped before connecting
             runCatching { if (localAdapter.isDiscovering) localAdapter.cancelDiscovery() }
-            val socket = device.createRfcommSocketToServiceRecord(sppUuid)
-            socket.connect()
-            setActiveSocket(socket.inputStream, socket.outputStream, device.address)
-            true
+            // Try secure first
+            runCatching {
+                val s = device.createRfcommSocketToServiceRecord(sppUuid)
+                s.connect()
+                setActiveSocket(s.inputStream, s.outputStream, device.address)
+                connectionState.value = true
+                return true
+            }.onFailure { /* try insecure below */ }
+            // Fallback: insecure socket (no pairing required on some devices)
+            runCatching {
+                val m = device.javaClass.getMethod("createInsecureRfcommSocketToServiceRecord", UUID::class.java)
+                val s = m.invoke(device, sppUuid) as java.net.Socket
+                // The reflection above may not return java.net.Socket; safer path:
+            }
+            // Official API for insecure (available on many devices)
+            val insecure = runCatching { device.createInsecureRfcommSocketToServiceRecord(sppUuid) }.getOrNull()
+            if (insecure != null) {
+                insecure.connect()
+                setActiveSocket(insecure.inputStream, insecure.outputStream, device.address)
+                connectionState.value = true
+                return true
+            }
+            false
         } catch (_: IllegalArgumentException) {
             false
         } catch (_: SecurityException) {
@@ -131,6 +154,7 @@ class AndroidBluetoothController(
         currentIn = null
         currentOut = null
         currentDeviceAddress = null
+        connectionState.value = false
     }
 
     override fun incoming(): Flow<ByteArray> = incomingFlow
@@ -159,6 +183,8 @@ class AndroidBluetoothController(
 
     override fun isEnabled(): Boolean = adapter?.isEnabled == true
 
+    override fun observeConnectionState(): Flow<Boolean> = connectionState.asStateFlow()
+
     init {
         // Start RFCOMM server to accept incoming connections
         startServerIfPossible()
@@ -167,6 +193,7 @@ class AndroidBluetoothController(
     private fun startServerIfPossible() {
         val localAdapter = adapter ?: return
         serverJob?.cancel()
+        insecureServerJob?.cancel()
         serverJob = ioScope.launch {
             try {
                 val server = localAdapter.listenUsingRfcommWithServiceRecord("HK_CHAT_SPP", sppUuid)
@@ -175,12 +202,26 @@ class AndroidBluetoothController(
                     val input = socket.inputStream
                     val output = socket.outputStream
                     setActiveSocket(input, output, socket.remoteDevice?.address ?: "")
+                    connectionState.value = true
                 }
             } catch (_: SecurityException) {
                 // missing perms
             } catch (_: Exception) {
                 // stop server on error
             }
+        }
+        // Insecure server to accept unpaired clients
+        insecureServerJob = ioScope.launch {
+            try {
+                val server = localAdapter.listenUsingInsecureRfcommWithServiceRecord("HK_CHAT_SPP_INSECURE", sppUuid)
+                while (true) {
+                    val socket = server.accept()
+                    val input = socket.inputStream
+                    val output = socket.outputStream
+                    setActiveSocket(input, output, socket.remoteDevice?.address ?: "")
+                    connectionState.value = true
+                }
+            } catch (_: Exception) { }
         }
     }
 

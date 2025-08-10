@@ -7,6 +7,7 @@ import com.appvalence.hayatkurtar.domain.usecase.ConnectDeviceUseCase
 import com.appvalence.hayatkurtar.domain.usecase.DisconnectUseCase
 import com.appvalence.hayatkurtar.domain.usecase.ObserveMessagesByPeerUseCase
 import com.appvalence.hayatkurtar.domain.usecase.SendMessageUseCase
+import com.appvalence.hayatkurtar.domain.usecase.ObserveConnectionStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ class ChatDetailViewModel @Inject constructor(
     private val disconnectUseCase: DisconnectUseCase,
     private val observeMessagesByPeerUseCase: ObserveMessagesByPeerUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
+    private val observeConnectionStateUseCase: ObserveConnectionStateUseCase,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -32,14 +34,26 @@ class ChatDetailViewModel @Inject constructor(
 
     fun start(address: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val ok = connectDeviceUseCase(address)
-            _isConnected.value = ok
-            if (ok) {
+            var connected = false
+            repeat(3) { attempt ->
+                if (!connected) {
+                    connected = connectDeviceUseCase(address)
+                    _isConnected.value = connected
+                    if (!connected) kotlinx.coroutines.delay(1500)
+                }
+            }
+            if (connected) {
                 viewModelScope.launch {
                     observeMessagesByPeerUseCase(address).collectLatest { list ->
                         _messages.value = list
                     }
                 }
+            }
+        }
+        // Observe connection state to keep UI in sync even if socket drops
+        viewModelScope.launch {
+            observeConnectionStateUseCase().collectLatest { state ->
+                _isConnected.value = state
             }
         }
     }

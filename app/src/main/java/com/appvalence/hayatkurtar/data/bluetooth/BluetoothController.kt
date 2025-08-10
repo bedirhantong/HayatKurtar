@@ -18,6 +18,7 @@ interface BluetoothController {
     suspend fun send(bytes: ByteArray)
     suspend fun findFirstAvailable(): String?
     fun isEnabled(): Boolean
+    fun observeConnectionState(): Flow<Boolean>
 }
 
 

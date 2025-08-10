@@ -3,6 +3,7 @@ package com.appvalence.hayatkurtar
 import android.os.Bundle
 import android.content.Intent
 import android.bluetooth.BluetoothAdapter
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +17,11 @@ import com.appvalence.hayatkurtar.presentation.navigation.AppNavGraph
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private var isReady: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { !isReady }
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -26,6 +31,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        // UI set edildiğinde splash'ı kaldır
+        isReady = true
     }
 
     fun makeDiscoverable(durationSec: Int = 120) {

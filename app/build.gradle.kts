@@ -7,14 +7,14 @@ plugins {
 
 android {
     namespace = "com.appvalence.hayatkurtar"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.appvalence.hayatkurtar"
         minSdk = 23
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 35
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -76,6 +76,9 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:$navigationComposeVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    
+    // SplashScreen API (Android 12+ with backwards compatibility)
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Hilt
     implementation("com.google.dagger:hilt-android:$hiltVersion")

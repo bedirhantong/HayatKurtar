@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Android 12+ permissions -->
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
     <!-- Pre-Android 12 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +27,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.HayatKurtar">
+            android:theme="@style/Theme.HayatKurtar.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +39,7 @@
             android:name=".data.bluetooth.HighPerformanceDiscoveryService"
             android:exported="false"
             android:foregroundServiceType="location|connectedDevice" />
-        
+
         <!-- Bluetooth discovery broadcasts (runtime registered; manifest here is not required) -->
     </application>
 
