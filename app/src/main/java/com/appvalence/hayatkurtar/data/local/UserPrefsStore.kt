@@ -19,6 +19,7 @@ class UserPrefsStore @Inject constructor(@ApplicationContext private val context
     private object Keys {
         val DISCOVERABLE_PROMPT_SHOWN: Preferences.Key<Boolean> = booleanPreferencesKey("discoverable_prompt_shown")
         val AUTO_VISIBILITY: Preferences.Key<Boolean> = booleanPreferencesKey("auto_visibility")
+            val ONBOARDING_COMPLETED: Preferences.Key<Boolean> = booleanPreferencesKey("onboarding_completed")
     }
 
     val discoverablePromptShown: Flow<Boolean> = context.userPrefsDataStore.data.map { p ->
@@ -29,6 +30,10 @@ class UserPrefsStore @Inject constructor(@ApplicationContext private val context
         p[Keys.AUTO_VISIBILITY] ?: false
     }
 
+        val onboardingCompleted: Flow<Boolean> = context.userPrefsDataStore.data.map { p ->
+            p[Keys.ONBOARDING_COMPLETED] ?: false
+        }
+
     suspend fun setDiscoverablePromptShown(shown: Boolean) {
         context.userPrefsDataStore.edit { it[Keys.DISCOVERABLE_PROMPT_SHOWN] = shown }
     }
@@ -36,6 +41,10 @@ class UserPrefsStore @Inject constructor(@ApplicationContext private val context
     suspend fun setAutoVisibilityEnabled(enabled: Boolean) {
         context.userPrefsDataStore.edit { it[Keys.AUTO_VISIBILITY] = enabled }
     }
+
+        suspend fun setOnboardingCompleted(completed: Boolean) {
+            context.userPrefsDataStore.edit { it[Keys.ONBOARDING_COMPLETED] = completed }
+        }
 }
 
 
