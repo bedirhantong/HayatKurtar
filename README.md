@@ -229,3 +229,9 @@ Snapshots için `version` sonuna `-SNAPSHOT` ekleyin; betik snapshot deposuna ya
 - Genişletilebilirlik: İlerde `bluetooth-mock`, `ble-only` gibi varyant modüller eklemek kolay
 
 
+| perm | home | devcs |
+|:-:|:-:|:-:|
+| <img src="arts/1.png" alt="drawing" width="250"/> | <img src="arts/2.png" alt="drawing" width="250"/> | <img src="arts/3.png" alt="drawing" width="250"/> |
+| disc | search | post |
+| <img src="arts/4.png" alt="drawing" width="250"/> | <img src="arts/search.png" alt="drawing" width="250"/> | <img src="arts/new_post.png" alt="drawing" width="250"/> 
+|
