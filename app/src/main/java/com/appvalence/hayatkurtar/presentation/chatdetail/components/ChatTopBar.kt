@@ -30,7 +30,7 @@ fun ChatTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack, modifier = Modifier.size(48.dp)) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Geri", tint = TelegramColors.Primary)
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.back), tint = TelegramColors.Primary)
             }
 
             PeerAvatar(title = title, modifier = Modifier.padding(end = 12.dp))
@@ -38,7 +38,7 @@ fun ChatTopBar(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium, color = TelegramColors.TextPrimary, maxLines = 1)
                 Text(
-                    text = if (isOnline) "çevrimiçi" else "son görülme bilinmiyor",
+                    text = if (isOnline) androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.online) else androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.last_seen_unknown),
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isOnline) TelegramColors.Primary else TelegramColors.TextSecondary
                 )

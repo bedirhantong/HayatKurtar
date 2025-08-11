@@ -56,8 +56,10 @@ import androidx.core.content.ContextCompat
 import android.bluetooth.BluetoothDevice
 import android.content.IntentSender
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.res.stringResource
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,6 +70,7 @@ fun DeviceListScreen(
     onBack: () -> Unit,
     viewModel: DevicesViewModel = hiltViewModel(),
 ) {
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
     val devices by viewModel.devices.collectAsState()
     val isScanning by viewModel.isScanning.collectAsState()
     val isBtEnabled by viewModel.isBluetoothEnabled.collectAsState()
@@ -86,6 +89,8 @@ fun DeviceListScreen(
             showCompletion.value = true
             delay(2000)
             showCompletion.value = false
+            // Scan completion feedback
+            haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
         }
     }
 
@@ -104,7 +109,7 @@ fun DeviceListScreen(
                         },
                     title = {
                         Text(
-                            "Cihazlar",
+                            androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.devices_title),
                             color = TelegramColors.TextPrimary,
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.SemiBold,
@@ -126,7 +131,7 @@ fun DeviceListScreen(
                         ) {
                             Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Kalibrasyon", fontSize = 14.sp)
+                            Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.calibration), fontSize = 14.sp)
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -162,7 +167,7 @@ fun DeviceListScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Yakındaki Cihazlar",
+                                text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.nearby_devices),
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Medium,
                                     fontSize = 18.sp
@@ -170,7 +175,7 @@ fun DeviceListScreen(
                                 color = TelegramColors.TextPrimary
                             )
                             Text(
-                                text = if (isScanning) "Cihazlar aranıyor..." else "Bluetooth cihazlarını bul",
+                                text = if (isScanning) androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.scanning_devices) else androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.find_bluetooth_devices),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TelegramColors.TextSecondary
                             )
@@ -181,6 +186,8 @@ fun DeviceListScreen(
                             onClick = {
                                 if (!isScanning) {
                                     viewModel.scan()
+                                    // Start scan feedback
+                                    haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                 }
                             },
                             enabled = !isScanning,
@@ -205,7 +212,7 @@ fun DeviceListScreen(
                                 )
                                 Spacer(Modifier.width(4.dp))
                             }
-                            Text(text = if (isScanning) "Taranıyor" else "Gelişmiş Tara", fontSize = 14.sp)
+                            Text(text = if (isScanning) androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.scanning) else androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.advanced_scan), fontSize = 14.sp)
                         }
                     }
                 }
@@ -225,8 +232,36 @@ fun DeviceListScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            // Pulsating radar indicator
+                            val infinite = androidx.compose.animation.core.rememberInfiniteTransition(label = "scanPulse")
+                            val pulse by infinite.animateFloat(
+                                initialValue = 0.85f,
+                                targetValue = 1.15f,
+                                animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+                                    animation = androidx.compose.animation.core.tween(900,
+                                        easing = androidx.compose.animation.core.FastOutSlowInEasing
+                                    ),
+                                    repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+                                ), label = "pulse"
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .size((20.dp * pulse).coerceAtLeast(1.dp))
+                                    .clip(CircleShape)
+                                    .background(TelegramColors.Primary.copy(alpha = 0.3f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size((12.dp * pulse).coerceAtLeast(1.dp))
+                                        .clip(CircleShape)
+                                        .background(TelegramColors.Primary)
+                                )
+                            }
+
                             LinearProgressIndicator(modifier = Modifier.weight(1f))
-                            Text(text = "Taranıyor… Bulunan: ${devices.size}")
+                            Text(text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.scanning_status_with_count, devices.size))
                         }
                     }
                 }
@@ -242,7 +277,7 @@ fun DeviceListScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Icon(Icons.Default.CheckCircle, contentDescription = null, tint = TelegramColors.Primary)
-                            Text(text = "Tarama tamamlandı. Bulunan: ${devices.size}")
+                            Text(text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.scan_completed_with_count, devices.size))
                         }
                     }
                 }
@@ -294,7 +329,7 @@ fun DeviceListScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             Text(
-                                text = "Henüz cihaz bulunamadı",
+                                text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.no_devices_found),
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Medium
                                 ),
@@ -302,7 +337,7 @@ fun DeviceListScreen(
                             )
 
                             Text(
-                                text = "Yakındaki cihazları bulmak için Gelişmiş Tara butonuna basın",
+                                text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.empty_devices_hint),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TelegramColors.TextSecondary
                             )
@@ -399,26 +434,26 @@ private fun CalibrationDialog(
     var n = rememberSaveable { mutableStateOf(pathLoss) }
     var a = rememberSaveable { mutableStateOf(alpha) }
 
-    AlertDialog(
+        AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = { onApply(mp.value, n.value, a.value) }) {
-                Text("Uygula")
+                Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.apply))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("İptal") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.cancel)) }
         },
-        title = { Text("Mesafe Kalibrasyonu") },
+        title = { Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.calibration_title)) },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text("1 m RSSI (measuredPower): ${mp.value.toInt()} dBm")
+                Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.measured_power_label, mp.value.toInt()))
                 Slider(value = mp.value, onValueChange = { mp.value = it }, valueRange = -90f..-30f)
                 Spacer(Modifier.height(8.dp))
-                Text("Yayılım katsayısı n: ${String.format("%.2f", n.value)}")
+                Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.path_loss_label, n.value))
                 Slider(value = n.value, onValueChange = { n.value = it }, valueRange = 1.5f..4.0f)
                 Spacer(Modifier.height(8.dp))
-                Text("Yumuşatma (alpha): ${String.format("%.2f", a.value)}")
+                Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.smoothing_alpha_label, a.value))
                 Slider(value = a.value, onValueChange = { a.value = it }, valueRange = 0.0f..1.0f)
             }
         }
@@ -431,12 +466,13 @@ fun DeviceListItem(name: String, address: String, onClick: () -> Unit) {
         color = TelegramColors.Background,
         modifier = Modifier.fillMaxWidth()
     ) {
+        val deviceDesc = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.device_content_desc, name)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-                .semantics { contentDescription = "Cihaz: $name" },
+                .semantics { contentDescription = deviceDesc },
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Device Icon
@@ -515,7 +551,7 @@ fun BluetoothOffPlaceholder(onEnable: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Bluetooth Kapalı",
+                text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.bluetooth_off),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Medium,
                     fontSize = 22.sp
@@ -526,16 +562,17 @@ fun BluetoothOffPlaceholder(onEnable: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Cihazları bulmak için Bluetooth'u açmanız gerekiyor",
+                text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.bluetooth_off_hint),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TelegramColors.TextSecondary
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            val openBt = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.open_bluetooth)
             Button(
                 onClick = onEnable,
-                modifier = Modifier.semantics { contentDescription = "Bluetooth'u aç" },
+                modifier = Modifier.semantics { contentDescription = openBt },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TelegramColors.Primary
                 ),
@@ -548,7 +585,7 @@ fun BluetoothOffPlaceholder(onEnable: () -> Unit) {
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "Bluetooth'u Aç",
+                    text = openBt,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )

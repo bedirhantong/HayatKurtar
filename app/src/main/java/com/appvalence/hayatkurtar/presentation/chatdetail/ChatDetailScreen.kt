@@ -18,6 +18,8 @@ import com.appvalence.hayatkurtar.presentation.chatdetail.components.ChatTopBar
 import com.appvalence.hayatkurtar.presentation.chatdetail.components.MessageBubble
 import com.appvalence.hayatkurtar.presentation.chatdetail.components.TelegramColors
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -26,13 +28,14 @@ fun ChatDetailScreen(
     onBack: () -> Unit,
     viewModel: ChatDetailViewModel = hiltViewModel()
 ) {
+    val haptics = LocalHapticFeedback.current
     LaunchedEffect(address) {
         if (address.isNotBlank()) viewModel.start(address)
     }
 
     val messages = viewModel.messages.collectAsState().value
     val isConnected = viewModel.isConnected.collectAsState().value
-    val peerTitle = address.ifBlank { "Bilinmeyen" }
+    val peerTitle = address.ifBlank { androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.unknown_peer) }
 
     var input by rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
@@ -90,16 +93,22 @@ fun ChatDetailScreen(
                     }
                 }
             } else {
-                // Empty state
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                // Empty state with CTA to discover devices
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Henüz mesaj yok",
+                        text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.chat_empty),
                         color = TelegramColors.TextSecondary,
                         style = MaterialTheme.typography.bodyMedium
                     )
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedButton(onClick = { /* navigate back to chats to start discovery */ onBack() }) {
+                        Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.discover_devices_cta))
+                    }
                 }
             }
         }
@@ -111,6 +120,8 @@ fun ChatDetailScreen(
             onSend = {
                 if (input.isNotBlank()) {
                     viewModel.send(input)
+                    // Light confirmation haptic on successful send action
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                     input = ""
                 }
             },

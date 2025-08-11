@@ -1,4 +1,57 @@
 <resources>
     <string name="app_name">Hayat Kurtar</string>
     <string name="permission_required">Bluetooth izinlerine ihtiyaç var</string>
+    <!-- ChatDetail / General -->
+    <string name="chat_empty">Henüz mesaj yok</string>
+    <string name="discover_devices_cta">Cihazları keşfet</string>
+    <string name="unknown_peer">Bilinmeyen</string>
+    <string name="online">çevrimiçi</string>
+    <string name="last_seen_unknown">son görülme bilinmiyor</string>
+    <string name="send">Gönder</string>
+    <string name="message_placeholder">Mesaj...</string>
+    <string name="back">Geri</string>
+
+    <!-- Devices / Scanning -->
+    <string name="devices_title">Cihazlar</string>
+    <string name="nearby_devices">Yakındaki Cihazlar</string>
+    <string name="scanning_devices">Cihazlar aranıyor...</string>
+    <string name="find_bluetooth_devices">Bluetooth cihazlarını bul</string>
+    <string name="scanning">Taranıyor</string>
+    <string name="advanced_scan">Gelişmiş Tara</string>
+    <string name="scanning_status_with_count">Taranıyor… Bulunan: %1$d</string>
+    <string name="scan_completed_with_count">Tarama tamamlandı. Bulunan: %1$d</string>
+    <string name="no_devices_found">Henüz cihaz bulunamadı</string>
+    <string name="empty_devices_hint">Yakındaki cihazları bulmak için Gelişmiş Tara butonuna basın</string>
+    <string name="bluetooth_off">Bluetooth Kapalı</string>
+    <string name="bluetooth_off_hint">Cihazları bulmak için Bluetooth\'u açmanız gerekiyor</string>
+    <string name="open_bluetooth">Bluetooth\'u Aç</string>
+    <string name="calibration">Kalibrasyon</string>
+    <string name="calibration_title">Mesafe Kalibrasyonu</string>
+    <string name="apply">Uygula</string>
+    <string name="cancel">İptal</string>
+    <string name="measured_power_label">1 m RSSI (measuredPower): %1$d dBm</string>
+    <string name="path_loss_label">Yayılım katsayısı n: %1$.2f</string>
+    <string name="smoothing_alpha_label">Yumuşatma (alpha): %1$.2f</string>
+    <string name="device_content_desc">Cihaz: %1$s</string>
+
+    <!-- Chat List -->
+    <string name="chats_title">Sohbetler</string>
+    <string name="discover_other_devices">Diğer cihazları keşfet</string>
+    <string name="chats_empty_title">Henüz sohbet yok</string>
+    <string name="chats_empty_hint">Yeni bir sohbet başlatmak için tara butonuna basın</string>
+    <string name="chat_delete">Sohbeti sil</string>
+    <string name="time_now">şimdi</string>
+    <string name="time_minutes_suffix">dk</string>
+
+    <!-- Discoverable Prompt / Permissions -->
+    <string name="prompt_discoverable_title">Keşfedilebilirliği Açın</string>
+    <string name="prompt_discoverable_desc">Uygulamanın yakınınızdaki kişileri hızlı ve güvenilir biçimde bulabilmesi için Bluetooth keşfedilebilirliğini açık tutmanız önerilir. Kapatırsanız performans etkilenebilir.</string>
+    <string name="auto_visible_each_launch">Her açılışta otomatik görünür yap</string>
+    <string name="open_recommended">Aç (Önerilen)</string>
+    <string name="later">Daha sonra</string>
+    <string name="permissions_reason_title">Bluetooth izni neden gerekli?</string>
+    <string name="permissions_reason_bullets">- Yakındaki cihazları bulmak\n- Çevrimdışı mesajlaşmayı etkinleştirmek\n- Bağlantı kurulumunu hızlandırmak</string>
+    <string name="allow">İzin ver</string>
+    <string name="open_settings">Ayarları Aç</string>
+    <string name="bluetooth_off_message">Bluetooth kapalı. Devam etmek için açınız.</string>
 </resources>

@@ -39,6 +39,8 @@ import androidx.compose.runtime.LaunchedEffect
 import com.appvalence.hayatkurtar.presentation.chatdetail.components.TelegramColors
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +49,7 @@ fun ChatListScreen(
     onScan: () -> Unit,
     viewModel: ChatListViewModel = hiltViewModel(),
 ) {
+    val haptics = LocalHapticFeedback.current
     val chats = viewModel.chats.collectAsState().value
     val localName = viewModel.localDeviceName.collectAsState().value
     val context = LocalContext.current
@@ -68,7 +71,7 @@ fun ChatListScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            "Sohbetler",
+                            androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.chats_title),
                             color = TelegramColors.TextPrimary,
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.SemiBold,
@@ -93,8 +96,10 @@ fun ChatListScreen(
                                             // Start BLE advertising and request Classic discoverable
                                             viewModel.enableVisibility()
                                             (context as? com.appvalence.hayatkurtar.MainActivity)?.makeDiscoverable(300)
+                                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                         } else {
                                             viewModel.disableVisibility()
+                                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         }
                                     }
                                 )
@@ -116,7 +121,7 @@ fun ChatListScreen(
                     contentDescription = null,
                 )
                 Spacer(Modifier.width(6.dp))
-                Text("Diğer cihazları keşfet")
+                Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.discover_other_devices))
             }
         },
         containerColor = TelegramColors.Background
@@ -142,7 +147,7 @@ fun ChatListScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     // Empty state text
                     Text(
-                        text = "Henüz sohbet yok",
+                        text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.chats_empty_title),
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Medium,
                             fontSize = 22.sp
@@ -153,7 +158,7 @@ fun ChatListScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Yeni bir sohbet başlatmak için tara butonuna basın",
+                        text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.chats_empty_hint),
                         style = MaterialTheme.typography.bodyMedium,
                         color = TelegramColors.TextSecondary
                     )

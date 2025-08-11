@@ -111,7 +111,7 @@ fun ChatListItem(
                 onDismissRequest = { menuExpanded.value = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Sohbeti sil") },
+                    text = { Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.chat_delete)) },
                     leadingIcon = {
                         Icon(
                             Icons.Default.Delete,

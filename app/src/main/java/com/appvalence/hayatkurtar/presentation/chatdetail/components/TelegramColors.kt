@@ -1,17 +1,36 @@
 package com.appvalence.hayatkurtar.presentation.chatdetail.components
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 object TelegramColors {
-    val Primary = Color(0xFF3390EC)
-    val Background = Color(0xFFFFFFFF)
-    val Surface = Color(0xFFF5F5F5)
-    val OutgoingBubble = Color(0xFF3390EC)
-    val IncomingBubble = Color(0xFFFFFFFF)
-    val TextPrimary = Color(0xFF000000)
-    val TextSecondary = Color(0xFF8E8E93)
-    val InputBackground = Color(0xFFF7F7F7)
-    val Divider = Color(0xFFE5E5EA)
+    val Primary: Color
+        @Composable get() = MaterialTheme.colorScheme.primary
+
+    val Background: Color
+        @Composable get() = MaterialTheme.colorScheme.background
+
+    val Surface: Color
+        @Composable get() = MaterialTheme.colorScheme.surface
+
+    val OutgoingBubble: Color
+        @Composable get() = MaterialTheme.colorScheme.primary
+
+    val IncomingBubble: Color
+        @Composable get() = MaterialTheme.colorScheme.surface
+
+    val TextPrimary: Color
+        @Composable get() = MaterialTheme.colorScheme.onBackground
+
+    val TextSecondary: Color
+        @Composable get() = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+
+    val InputBackground: Color
+        @Composable get() = MaterialTheme.colorScheme.surfaceVariant
+
+    val Divider: Color
+        @Composable get() = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
 }
 
 

@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.appvalence.hayatkurtar.R
+import android.app.PendingIntent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.appvalence.bluetooth.api.HighPerformanceScanner
@@ -40,6 +41,11 @@ class HighPerformanceDiscoveryService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         job?.cancel()
         store.reset()
         job = serviceScope.launch {
@@ -65,17 +71,29 @@ class HighPerformanceDiscoveryService : Service() {
     }
 
     private fun buildNotification(text: String): Notification {
+        val stopIntent = Intent(this, HighPerformanceDiscoveryService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val stopPending = PendingIntent.getService(
+            this,
+            0,
+            stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
+        )
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Bluetooth Keşfi")
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setOngoing(true)
+            .addAction(0, "Durdur", stopPending)
             .build()
     }
 
     companion object {
         private const val CHANNEL_ID = "discovery_channel"
         private const val NOTIFICATION_ID = 1337
+        private const val ACTION_STOP = "action_stop_discovery"
     }
 }
 

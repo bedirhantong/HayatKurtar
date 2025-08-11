@@ -26,7 +26,7 @@ fun MessageBubble(
     }
 
     val bubbleColor = if (isMine) TelegramColors.OutgoingBubble else TelegramColors.IncomingBubble
-    val textColor = if (isMine) Color.White else TelegramColors.TextPrimary
+    val textColor = if (isMine) MaterialTheme.colorScheme.onPrimary else TelegramColors.TextPrimary
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -48,7 +48,7 @@ fun MessageBubble(
                     Text(
                         text = formatTime(message.timestamp),
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                        color = if (isMine) Color.White.copy(alpha = 0.8f) else TelegramColors.TextSecondary
+                        color = if (isMine) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else TelegramColors.TextSecondary
                     )
                 }
             }

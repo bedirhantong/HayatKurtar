@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun ChatInputBar(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp),
-                placeholder = { Text(text = "Mesaj...", color = TelegramColors.TextSecondary) },
+                placeholder = { Text(text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.message_placeholder), color = TelegramColors.TextSecondary) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
@@ -57,6 +58,7 @@ fun ChatInputBar(
             )
 
             val canSend = input.isNotBlank() && isConnected
+            val sendDesc = stringResource(id = com.appvalence.hayatkurtar.R.string.send)
             IconButton(
                 onClick = onSend,
                 enabled = canSend,
@@ -66,7 +68,7 @@ fun ChatInputBar(
                         color = if (canSend) TelegramColors.Primary else TelegramColors.Primary.copy(alpha = 0.4f),
                         shape = CircleShape
                     )
-                    .semantics { contentDescription = "Gönder" }
+                    .semantics { contentDescription = sendDesc }
             ) {
                 Icon(
                     imageVector = Icons.Default.Send,
