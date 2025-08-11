@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.appvalence.hayatkurtar.presentation.chatdetail.ChatDetailScreen
 import com.appvalence.hayatkurtar.presentation.chatlist.ChatListScreen
-import com.appvalence.hayatkurtar.presentation.components.PermissionsGate
+import com.appvalence.hayatkurtar.presentation.permission.PermissionsGate
 import com.appvalence.hayatkurtar.presentation.devices.DeviceListScreen
 
 object Routes {

@@ -40,7 +40,6 @@ fun ChatDetailScreen(
     var input by rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
 
-    // Auto scroll to bottom when new messages arrive
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(0)
@@ -113,7 +112,6 @@ fun ChatDetailScreen(
             }
         }
 
-        // Telegram-style Input Bar
         ChatInputBar(
             input = input,
             onInputChange = { input = it },

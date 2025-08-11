@@ -58,8 +58,6 @@ import android.content.IntentSender
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.res.stringResource
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,8 +74,6 @@ fun DeviceListScreen(
     val isBtEnabled by viewModel.isBluetoothEnabled.collectAsState()
     val appBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(appBarState)
-
-    val openSystemPicker = rememberSystemBluetoothDeviceChooser(onDeviceSelected)
     val showCalibration = rememberSaveable { mutableStateOf(false) }
     val measuredPowerState = rememberSaveable { mutableStateOf(-59f) }
     val pathLossState = rememberSaveable { mutableStateOf(2.0f) }

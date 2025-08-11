@@ -1,4 +1,4 @@
-package com.appvalence.hayatkurtar.presentation.components
+package com.appvalence.hayatkurtar.presentation.permission
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
