@@ -61,6 +61,7 @@ fun ChatListScreen(
     val appBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(appBarState)
     val menuExpanded = remember { mutableStateOf(false) }
+    val showRenameDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -103,6 +104,10 @@ fun ChatListScreen(
                                         }
                                     }
                                 )
+                                Spacer(Modifier.width(8.dp))
+                                IconButton(onClick = { showRenameDialog.value = true }) {
+                                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                                }
                             }
                         }
                     },
@@ -193,6 +198,54 @@ fun ChatListScreen(
                 }
             }
         }
+    }
+
+    // Enforce meaningful device name
+    fun looksLikeAddress(name: String): Boolean {
+        val macRegex = Regex("^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$")
+        val ipRegex = Regex("^(?:\\d{1,3}\\.){3}\\d{1,3}$")
+        return name.matches(macRegex) || name.matches(ipRegex)
+    }
+
+    LaunchedEffect(localName) {
+        if (localName.isBlank() || looksLikeAddress(localName)) {
+            showRenameDialog.value = true
+        }
+    }
+
+    if (showRenameDialog.value) {
+        var text = remember { mutableStateOf("") }
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = {},
+            title = { Text(text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.device_name_required_title)) },
+            text = {
+                Column {
+                    Text(text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.device_name_required_desc))
+                    Spacer(Modifier.height(12.dp))
+                    androidx.compose.material3.OutlinedTextField(
+                        value = text.value,
+                        onValueChange = { text.value = it },
+                        placeholder = { Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.new_device_name_hint)) },
+                        singleLine = true,
+                        isError = text.value.isNotBlank() && !text.value.matches(Regex("^[A-Za-z0-9 _-]{3,}") ),
+                    )
+                }
+            },
+            confirmButton = {
+                val isValid = text.value.matches(Regex("^[A-Za-z0-9 _-]{3,}"))
+                TextButton(onClick = {
+                    if (isValid) {
+                        val ok = viewModel.renameLocalDevice(text.value.trim())
+                        if (ok) {
+                            showRenameDialog.value = false
+                        }
+                    }
+                }, enabled = isValid) {
+                    Text(androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.save))
+                }
+            },
+            dismissButton = {}
+        )
     }
 
     // Enforce discoverable after Bluetooth enabled

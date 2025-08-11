@@ -1,17 +1,16 @@
 package com.appvalence.hayatkurtar.presentation.chatlist
 
 import android.annotation.SuppressLint
-import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.bluetooth.BluetoothAdapter
+import android.os.Build
 import com.appvalence.hayatkurtar.domain.model.ChatMessage
 import com.appvalence.hayatkurtar.domain.usecase.ObserveMessagesUseCase
 import com.appvalence.hayatkurtar.domain.usecase.DeleteChatByPeerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.appvalence.hayatkurtar.domain.usecase.IsBluetoothEnabledUseCase
 import com.appvalence.bluetooth.api.BleAdvertiser
-import android.bluetooth.BluetoothAdapter
-import android.os.Build
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -75,6 +74,16 @@ class ChatListViewModel @Inject constructor(
                 _promptShown.value = shown
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun renameLocalDevice(newName: String): Boolean {
+        val adapter = BluetoothAdapter.getDefaultAdapter() ?: return false
+        val ok = runCatching { adapter.name = newName; true }.getOrElse { false }
+        if (ok) {
+            _localDeviceName.value = newName
+        }
+        return ok
     }
     fun enableVisibility() {
         if (!_isAdvertising.value) {

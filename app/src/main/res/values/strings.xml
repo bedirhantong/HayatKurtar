@@ -54,4 +54,12 @@
     <string name="allow">İzin ver</string>
     <string name="open_settings">Ayarları Aç</string>
     <string name="bluetooth_off_message">Bluetooth kapalı. Devam etmek için açınız.</string>
+
+    <!-- Device name enforcement -->
+    <string name="device_name_required_title">Cihaz adınızı belirleyin</string>
+    <string name="device_name_required_desc">Cihaz adınız, yakınınızdaki kişilerin sizi tanıyabilmesi için gereklidir. Harf ve rakam içeren anlamlı bir ad seçin.</string>
+    <string name="new_device_name_hint">Cihaz adı</string>
+    <string name="save">Kaydet</string>
+    <string name="invalid_device_name">Geçersiz ad. En az 3 karakter olmalı ve sadece harf, rakam, boşluk, - ve _ içermelidir.</string>
+    <string name="rename_device_name">Cihaz adını değiştir</string>
 </resources>
