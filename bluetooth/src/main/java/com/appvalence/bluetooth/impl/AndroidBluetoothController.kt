@@ -161,6 +161,8 @@ class AndroidBluetoothController(
 
     override fun observeConnectionState(): Flow<Boolean> = connectionState.asStateFlow()
 
+    override fun getCurrentPeerAddress(): String? = currentDeviceAddress
+
     init {
         startServerIfPossible()
     }

@@ -19,6 +19,7 @@ interface BluetoothController {
     suspend fun findFirstAvailable(): String?
     fun isEnabled(): Boolean
     fun observeConnectionState(): Flow<Boolean>
+    fun getCurrentPeerAddress(): String?
 }
 
 
