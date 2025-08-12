@@ -20,6 +20,8 @@ interface BluetoothController {
     fun isEnabled(): Boolean
     fun observeConnectionState(): Flow<Boolean>
     fun getCurrentPeerAddress(): String?
+    suspend fun pair(address: String): Boolean
+    fun isBonded(address: String): Boolean
 }
 
 

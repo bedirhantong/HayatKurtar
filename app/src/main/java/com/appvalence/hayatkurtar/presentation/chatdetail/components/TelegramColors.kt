@@ -14,17 +14,18 @@ object TelegramColors {
     val Surface: Color
         @Composable get() = MaterialTheme.colorScheme.surface
 
+    // Chat bubble colors tuned for clearer contrast
     val OutgoingBubble: Color
-        @Composable get() = MaterialTheme.colorScheme.primary
+        @Composable get() = MaterialTheme.colorScheme.primary.copy(alpha = 0.95f)
 
     val IncomingBubble: Color
-        @Composable get() = MaterialTheme.colorScheme.surface
+        @Composable get() = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
 
     val TextPrimary: Color
         @Composable get() = MaterialTheme.colorScheme.onBackground
 
     val TextSecondary: Color
-        @Composable get() = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+        @Composable get() = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
 
     val InputBackground: Color
         @Composable get() = MaterialTheme.colorScheme.surfaceVariant

@@ -81,4 +81,11 @@ class ObserveConnectionStateUseCase @Inject constructor(private val repo: ChatRe
     operator fun invoke(): Flow<Boolean> = bluetoothController.observeConnectionState()
 }
 
+class EnsureBondedUseCase @Inject constructor(private val bluetoothController: com.appvalence.bluetooth.api.BluetoothController) {
+    suspend operator fun invoke(address: String): Boolean {
+        if (bluetoothController.isBonded(address)) return true
+        return bluetoothController.pair(address)
+    }
+}
+
 

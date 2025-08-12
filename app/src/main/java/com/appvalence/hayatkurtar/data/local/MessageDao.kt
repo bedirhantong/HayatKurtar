@@ -19,6 +19,12 @@ interface MessageDao {
 
     @Query("DELETE FROM messages WHERE peerAddress = :peer")
     suspend fun deleteByPeer(peer: String)
+
+    @Query("UPDATE messages SET delivered = 1 WHERE messageId = :messageId")
+    suspend fun markDelivered(messageId: String)
+
+    @Query("UPDATE messages SET read = 1 WHERE messageId = :messageId")
+    suspend fun markRead(messageId: String)
 }
 
 

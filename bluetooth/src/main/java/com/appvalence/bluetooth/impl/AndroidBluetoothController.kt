@@ -163,6 +163,45 @@ class AndroidBluetoothController(
 
     override fun getCurrentPeerAddress(): String? = currentDeviceAddress
 
+    override suspend fun pair(address: String): Boolean {
+        val localAdapter = adapter ?: return false
+        return try {
+            if (!BluetoothAdapter.checkBluetoothAddress(address)) return false
+            val device: BluetoothDevice = localAdapter.getRemoteDevice(address)
+            // Already bonded?
+            if (device.bondState == BluetoothDevice.BOND_BONDED) return true
+            val receiver = object : BroadcastReceiver() {
+                var result = false
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    if (intent?.action == BluetoothDevice.ACTION_BOND_STATE_CHANGED) {
+                        val d: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                        if (d?.address == address) {
+                            val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.BOND_NONE)
+                            if (state == BluetoothDevice.BOND_BONDED) result = true
+                        }
+                    }
+                }
+            }
+            val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+            appContext.registerReceiver(receiver, filter)
+            val ok = runCatching { device.createBond() }.isSuccess
+            // Wait briefly for bond result
+            kotlinx.coroutines.withTimeoutOrNull(15_000) {
+                while (device.bondState != BluetoothDevice.BOND_BONDED && device.bondState != BluetoothDevice.BOND_NONE) {
+                    kotlinx.coroutines.delay(300)
+                }
+            }
+            runCatching { appContext.unregisterReceiver(receiver) }
+            device.bondState == BluetoothDevice.BOND_BONDED && ok
+        } catch (_: Exception) { false }
+    }
+
+    override fun isBonded(address: String): Boolean {
+        val a = adapter ?: return false
+        if (!BluetoothAdapter.checkBluetoothAddress(address)) return false
+        return try { a.getRemoteDevice(address).bondState == BluetoothDevice.BOND_BONDED } catch (_: Exception) { false }
+    }
+
     init {
         startServerIfPossible()
     }

@@ -6,6 +6,9 @@ data class ChatMessage(
     val content: String,
     val timestamp: Long,
     val peerAddress: String,
+    val messageId: String? = null,
+    val delivered: Boolean = false,
+    val read: Boolean = false,
 )
 
 

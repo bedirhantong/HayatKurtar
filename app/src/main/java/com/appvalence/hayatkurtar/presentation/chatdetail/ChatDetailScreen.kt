@@ -1,5 +1,6 @@
 package com.appvalence.hayatkurtar.presentation.chatdetail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +21,15 @@ import com.appvalence.hayatkurtar.presentation.chatdetail.components.TelegramCol
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.cancel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -35,14 +45,31 @@ fun ChatDetailScreen(
 
     val messages = viewModel.messages.collectAsState().value
     val isConnected = viewModel.isConnected.collectAsState().value
-    val peerTitle = address.ifBlank { androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.unknown_peer) }
+    val resolvedTitle = viewModel.peerTitle.collectAsState().value
+    val peerTitle = (resolvedTitle.ifBlank { address }).ifBlank { androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.unknown_peer) }
+    val pairingState = viewModel.pairingState.collectAsState().value
 
     var input by rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val sentMessageText = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.message_sent)
+    val showScrollButton by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 2 || listState.firstVisibleItemScrollOffset > 200
+        }
+    }
 
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(0)
+    // Daha kararlı ilk yükleme: içerik ölçümü sonrası liste başına kaydır
+    val hasAutoScrolled = rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(messages) {
+        if (messages.isNotEmpty() && !hasAutoScrolled.value) {
+            // Kısa bir frame sonu gecikmesi ölçüm için faydalı
+            snapshotFlow { listState.layoutInfo.totalItemsCount }.collect { _ ->
+                listState.scrollToItem(0)
+                hasAutoScrolled.value = true
+                this.cancel()
+            }
         }
     }
 
@@ -59,6 +86,63 @@ fun ChatDetailScreen(
             isOnline = isConnected,
             onBack = onBack
         )
+
+        // Pairing banner feedback
+        AnimatedVisibility(visible = pairingState != ChatDetailViewModel.PairingState.Idle && !isConnected) {
+            val (bg, fg, text) = when (pairingState) {
+                ChatDetailViewModel.PairingState.Requesting -> Triple(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    MaterialTheme.colorScheme.onSurfaceVariant,
+                    androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.pairing_requesting)
+                )
+                ChatDetailViewModel.PairingState.Success -> Triple(
+                    MaterialTheme.colorScheme.tertiaryContainer,
+                    MaterialTheme.colorScheme.onTertiaryContainer,
+                    androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.pairing_success)
+                )
+                ChatDetailViewModel.PairingState.Failed -> Triple(
+                    MaterialTheme.colorScheme.errorContainer,
+                    MaterialTheme.colorScheme.onErrorContainer,
+                    androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.pairing_failed)
+                )
+                else -> Triple(Color.Unspecified, Color.Unspecified, "")
+            }
+            if (text.isNotBlank()) {
+                Surface(color = bg) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (pairingState == ChatDetailViewModel.PairingState.Requesting) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .padding(end = 8.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            }
+                            Text(text = text, color = fg, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Row {
+                            if (pairingState == ChatDetailViewModel.PairingState.Failed) {
+                                TextButton(onClick = { viewModel.retryPair(address) }) {
+                                    Text(text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.retry), color = fg)
+                                }
+                            }
+                            if (pairingState == ChatDetailViewModel.PairingState.Success) {
+                                TextButton(onClick = { viewModel.reconnect() }) {
+                                    Text(text = androidx.compose.ui.res.stringResource(id = com.appvalence.hayatkurtar.R.string.connect), color = fg)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // Messages List
         Box(
@@ -87,7 +171,10 @@ fun ChatDetailScreen(
                     ) { message ->
                         MessageBubble(
                             message = message,
-                            isMine = message.sender == "Me"
+                            isMine = message.sender == "Me",
+                            peerTitle = resolvedTitle,
+                            delivered = message.delivered,
+                            read = message.read
                         )
                     }
                 }
@@ -110,6 +197,21 @@ fun ChatDetailScreen(
                     }
                 }
             }
+
+            // Scroll-to-bottom FAB similar to sample
+            if (showScrollButton) {
+                androidx.compose.material3.FloatingActionButton(
+                    onClick = { scope.launch { listState.animateScrollToItem(0) } },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 8.dp, end = 16.dp)
+                        .size(46.dp),
+                    containerColor = TelegramColors.Primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = null)
+                }
+            }
         }
 
         ChatInputBar(
@@ -120,7 +222,10 @@ fun ChatDetailScreen(
                     viewModel.send(input)
                     // Light confirmation haptic on successful send action
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    scope.launch { snackbarHostState.showSnackbar(sentMessageText, withDismissAction = true, duration = SnackbarDuration.Short) }
                     input = ""
+                    // Scroll to bottom smoothly
+                    scope.launch { listState.animateScrollToItem(0) }
                 }
             },
             isConnected = isConnected,
@@ -128,5 +233,12 @@ fun ChatDetailScreen(
                 .fillMaxWidth()
                 .navigationBarsPadding()
         )
+    }
+
+    // Snackbar host layered above
+    Box(modifier = Modifier.fillMaxSize()) {
+        SnackbarHost(hostState = snackbarHostState, modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(bottom = 80.dp))
     }
 }

@@ -30,6 +30,7 @@ class ChatRepositoryImpl @Inject constructor(
     @Volatile private var currentPeerAddress: String? = null
     private val repoScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private var pendingIncoming: ByteArray = ByteArray(0)
+    private var pendingOutgoingAcks: MutableMap<String, Long> = mutableMapOf()
     private val ENCRYPTION_ENABLED: Boolean = false // TODO: enable after Noise handshake
 
     init {
@@ -65,15 +66,62 @@ class ChatRepositoryImpl @Inject constructor(
                             runCatching { payload.toString(Charsets.UTF_8) }.getOrDefault("")
                         }
                         if (text.isNotBlank()) {
+                            // Simple protocol: if starts with "ACK:", mark delivered
+                            if (text.startsWith("ACK:")) {
+                                val ackId = text.removePrefix("ACK:").trim()
+                                if (ackId.isNotBlank()) {
+                                    runCatching { dao.markDelivered(ackId) }
+                                }
+                                continue
+                            }
+                            // READ receipts
+                            if (text.startsWith("READ:")) {
+                                val id = text.removePrefix("READ:").trim()
+                                if (id.isNotBlank()) runCatching { dao.markRead(id) }
+                                continue
+                            }
+                            // If it's a normal message, persist then respond with ACK if it has an ID header
+                            var body = text
+                            var msgId: String? = null
+                            if (text.startsWith("ID:")) {
+                                val idx = text.indexOf('\n')
+                                if (idx > 3) {
+                                    msgId = text.substring(3, idx).trim()
+                                    body = text.substring(idx + 1)
+                                }
+                            }
                             val peer = currentPeerAddress ?: bluetooth.getCurrentPeerAddress() ?: bluetooth.findFirstAvailable() ?: ""
                             dao.insert(
                                 MessageEntity(
                                     sender = peer.ifBlank { "Peer" },
-                                    content = text,
+                                    content = body,
                                     timestamp = System.currentTimeMillis(),
                                     peerAddress = peer,
+                                    messageId = msgId,
                                 )
                             )
+                            // Send ACK back if message had ID
+                            if (!msgId.isNullOrBlank()) {
+                                val ackPayload = "ACK:$msgId".encodeToByteArray()
+                                val len = ackPayload.size
+                                val header = byteArrayOf(
+                                    ((len ushr 24) and 0xFF).toByte(),
+                                    ((len ushr 16) and 0xFF).toByte(),
+                                    ((len ushr 8) and 0xFF).toByte(),
+                                    (len and 0xFF).toByte()
+                                )
+                                bluetooth.send(header + ackPayload)
+                                // Also, mark as READ immediately if app is foreground (simplified)
+                                val readPayload = "READ:$msgId".encodeToByteArray()
+                                val rlen = readPayload.size
+                                val rheader = byteArrayOf(
+                                    ((rlen ushr 24) and 0xFF).toByte(),
+                                    ((rlen ushr 16) and 0xFF).toByte(),
+                                    ((rlen ushr 8) and 0xFF).toByte(),
+                                    (rlen and 0xFF).toByte()
+                                )
+                                bluetooth.send(rheader + readPayload)
+                            }
                         }
                     }
                 }
@@ -127,11 +175,18 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun sendMessage(plainText: String) {
+        val messageId = java.util.UUID.randomUUID().toString()
+        val textWithId = buildString {
+            append("ID:")
+            append(messageId)
+            append('\n')
+            append(plainText)
+        }
         val payload = if (ENCRYPTION_ENABLED) {
             val aead = crypto.aead()
-            aead.encrypt(plainText.encodeToByteArray(), null)
+            aead.encrypt(textWithId.encodeToByteArray(), null)
         } else {
-            plainText.encodeToByteArray()
+            textWithId.encodeToByteArray()
         }
         val len = payload.size
         val header = byteArrayOf(
@@ -147,6 +202,8 @@ class ChatRepositoryImpl @Inject constructor(
                 content = plainText,
                 timestamp = System.currentTimeMillis(),
                 peerAddress = currentPeerAddress ?: bluetooth.findFirstAvailable() ?: "",
+                messageId = messageId,
+                delivered = false,
             )
         )
     }
@@ -154,14 +211,14 @@ class ChatRepositoryImpl @Inject constructor(
     override fun observeMessages(): Flow<List<ChatMessage>> =
         dao.observeAll().map { list ->
             list.map { e ->
-                ChatMessage(id = e.id, sender = e.sender, content = e.content, timestamp = e.timestamp, peerAddress = e.peerAddress)
+                ChatMessage(id = e.id, sender = e.sender, content = e.content, timestamp = e.timestamp, peerAddress = e.peerAddress, messageId = e.messageId, delivered = e.delivered, read = e.read)
             }
         }
 
     override fun observeMessagesByPeer(peer: String): Flow<List<ChatMessage>> =
         dao.observeByPeer(peer).map { list ->
             list.map { e ->
-                ChatMessage(id = e.id, sender = e.sender, content = e.content, timestamp = e.timestamp, peerAddress = e.peerAddress)
+                ChatMessage(id = e.id, sender = e.sender, content = e.content, timestamp = e.timestamp, peerAddress = e.peerAddress, messageId = e.messageId, delivered = e.delivered, read = e.read)
             }
         }
 

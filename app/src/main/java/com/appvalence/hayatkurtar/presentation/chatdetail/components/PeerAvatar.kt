@@ -14,11 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PeerAvatar(title: String, modifier: Modifier = Modifier) {
+fun PeerAvatar(title: String, modifier: Modifier = Modifier, size: Int = 36) {
     val initials = title.trim().take(2).uppercase()
     Box(
         modifier = modifier
-            .size(36.dp)
+            .size(size.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center

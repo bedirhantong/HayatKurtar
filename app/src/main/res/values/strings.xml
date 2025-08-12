@@ -4,6 +4,12 @@
     <!-- ChatDetail / General -->
     <string name="chat_empty">Henüz mesaj yok</string>
     <string name="discover_devices_cta">Cihazları keşfet</string>
+    <string name="pairing_requesting">Eşleşme isteği gönderiliyor…</string>
+    <string name="pairing_success">Eşleşme tamamlandı. Bağlanılıyor…</string>
+    <string name="pairing_failed">Eşleşme başarısız. Tekrar denemek ister misiniz?</string>
+    <string name="retry">Tekrar dene</string>
+    <string name="message_sent">Mesaj gönderildi</string>
+    <string name="connect">Bağlan</string>
     <string name="unknown_peer">Bilinmeyen</string>
     <string name="online">çevrimiçi</string>
     <string name="last_seen_unknown">son görülme bilinmiyor</string>
