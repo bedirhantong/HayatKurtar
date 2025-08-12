@@ -3,6 +3,7 @@ package com.appvalence.hayatkurtar.presentation.chatdetail.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Send
@@ -27,11 +28,9 @@ fun ChatInputBar(
 ) {
     Surface(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(32.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 4.dp
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(32.dp),
+        color = Color.Transparent,
     ) {
         Row(
             modifier = Modifier
@@ -40,10 +39,6 @@ fun ChatInputBar(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /* attachments in future */ }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = TelegramColors.Primary)
-            }
-
             TextField(
                 value = input,
                 onValueChange = onInputChange,
@@ -91,5 +86,3 @@ fun ChatInputBar(
         }
     }
 }
-
-

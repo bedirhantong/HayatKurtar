@@ -64,7 +64,6 @@ fun ChatDetailScreen(
     val hasAutoScrolled = rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(messages) {
         if (messages.isNotEmpty() && !hasAutoScrolled.value) {
-            // Kısa bir frame sonu gecikmesi ölçüm için faydalı
             snapshotFlow { listState.layoutInfo.totalItemsCount }.collect { _ ->
                 listState.scrollToItem(0)
                 hasAutoScrolled.value = true
@@ -78,7 +77,6 @@ fun ChatDetailScreen(
             .fillMaxSize()
             .background(TelegramColors.Background)
             .windowInsetsPadding(WindowInsets.statusBars)
-            .imePadding()
     ) {
         // Telegram-style Top Bar
         ChatTopBar(
@@ -200,7 +198,7 @@ fun ChatDetailScreen(
 
             // Scroll-to-bottom FAB similar to sample
             if (showScrollButton) {
-                androidx.compose.material3.FloatingActionButton(
+                FloatingActionButton(
                     onClick = { scope.launch { listState.animateScrollToItem(0) } },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -230,8 +228,6 @@ fun ChatDetailScreen(
             },
             isConnected = isConnected,
             modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
         )
     }
 

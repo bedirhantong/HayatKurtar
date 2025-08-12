@@ -3,6 +3,8 @@ package com.appvalence.hayatkurtar.presentation.chatlist.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +39,8 @@ fun ChatListItem(
     onDelete: (peer: String) -> Unit = {}
 ) {
     val menuExpanded = remember { mutableStateOf(false) }
+    // Resolve peer device name (WhatsApp-like: show the other party, not last sender)
+    val peerName = remember(message.peerAddress) { resolveDeviceName(message.peerAddress) }
 
     Surface(
         color = TelegramColors.Background,
@@ -54,7 +58,7 @@ fun ChatListItem(
         ) {
             // Avatar
             ChatAvatar(
-                name = message.sender,
+                name = peerName,
                 modifier = Modifier.padding(end = 12.dp)
             )
 
@@ -67,9 +71,9 @@ fun ChatListItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Sender name
+                    // Peer name
                     Text(
-                        text = message.sender,
+                        text = peerName,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Medium,
                             fontSize = 16.sp
@@ -127,6 +131,16 @@ fun ChatListItem(
             }
         }
     }
+}
+
+@SuppressLint("MissingPermission")
+private fun resolveDeviceName(address: String): String {
+    if (address.isBlank()) return ""
+    val adapter = BluetoothAdapter.getDefaultAdapter() ?: return address
+    return runCatching { adapter.getRemoteDevice(address).name }
+        .getOrNull()
+        ?.takeIf { !it.isNullOrBlank() }
+        ?: address
 }
 
 @Composable

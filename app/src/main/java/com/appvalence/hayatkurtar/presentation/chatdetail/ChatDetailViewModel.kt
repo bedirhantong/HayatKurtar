@@ -12,6 +12,7 @@ import com.appvalence.hayatkurtar.domain.usecase.SendMessageUseCase
 import com.appvalence.hayatkurtar.domain.usecase.ObserveConnectionStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,8 +45,18 @@ class ChatDetailViewModel @Inject constructor(
     val pairingState: StateFlow<PairingState> = _pairingState.asStateFlow()
 
     @Volatile private var lastAddress: String? = null
+    private var messagesCollectorJob: Job? = null
 
     fun start(address: String) {
+        // Always start observing local messages immediately, regardless of connection state
+        messagesCollectorJob?.cancel()
+        messagesCollectorJob = viewModelScope.launch {
+            observeMessagesByPeerUseCase(address).collectLatest { list ->
+                val sorted = list.sortedByDescending { it.timestamp }
+                _messages.value = sorted
+            }
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             lastAddress = address
             var connected = false
@@ -58,15 +69,6 @@ class ChatDetailViewModel @Inject constructor(
                     connected = if (bonded) connectDeviceUseCase(address) else false
                     _isConnected.value = connected
                     if (!connected) kotlinx.coroutines.delay(1500)
-                }
-            }
-            if (connected) {
-                viewModelScope.launch {
-                    observeMessagesByPeerUseCase(address).collectLatest { list ->
-                        // Ensure newest first for reverse list and emit on main thread
-                        val sorted = list.sortedByDescending { it.timestamp }
-                        _messages.value = sorted
-                    }
                 }
             }
         }
