@@ -11,21 +11,79 @@ android {
 
     defaultConfig {
         applicationId = "com.appvalence.hayatkurtar"
-        minSdk = 23
+        minSdk = 24 // Updated to API 24 for mesh networking features
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 1
+        versionName = "1.0.0"
+        
+        // App metadata for Play Store
+        resValue("string", "app_version", versionName!!)
+        resValue("string", "app_build", versionCode.toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Vector drawable support for older devices
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+    
+    signingConfigs {
+        create("release") {
+            // These should be set via environment variables or gradle.properties for security
+            // keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as String? ?: "hayatkurtar"
+            // keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String? ?: ""
+            // storeFile = file(project.findProperty("RELEASE_STORE_FILE") as String? ?: "keystore.jks")
+            // storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as String? ?: ""
+            
+            // For now, use debug keystore - REPLACE THIS FOR PRODUCTION
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+        }
     }
 
     buildTypes {
-        release {
+        debug {
+            isDebuggable = true
             isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            
+            // Debugging manifest placeholders
+            manifestPlaceholders["appName"] = "HayatKurtar Debug"
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
+        }
+        
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
+            
+            signingConfig = signingConfigs.getByName("release")
+            
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            
+            // Production manifest placeholders
+            manifestPlaceholders["appName"] = "HayatKurtar"
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
+            
+            // Bundle configuration for Play Store
+            bundle {
+                language {
+                    enableSplit = true
+                }
+                density {
+                    enableSplit = true
+                }
+                abi {
+                    enableSplit = true
+                }
+            }
         }
     }
     compileOptions {
@@ -101,7 +159,15 @@ dependencies {
     implementation("androidx.security:security-crypto:$securityCryptoVersion")
     implementation("com.google.crypto.tink:tink-android:$tinkAndroidVersion")
 
-    implementation(project(":bluetooth"))
+    // Module dependencies
+    implementation(project(":core"))
+    implementation(project(":domain"))
+    implementation(project(":data:mesh"))
+    implementation(project(":data:transport:bluetooth"))
+    implementation(project(":data:transport:wifidirect"))
+    implementation(project(":presentation"))
+    implementation(project(":di"))
+    // Removed legacy :bluetooth module to avoid conflicts
 
     // Test
     testImplementation("junit:junit:${project.findProperty("junitVersion")}")

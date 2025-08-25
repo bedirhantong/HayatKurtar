@@ -1,71 +1,160 @@
 <resources>
-    <string name="app_name">Hayat Kurtar</string>
-    <string name="permission_required">Bluetooth izinlerine ihtiyaç var</string>
-    <!-- ChatDetail / General -->
-    <string name="chat_empty">Henüz mesaj yok</string>
-    <string name="discover_devices_cta">Cihazları keşfet</string>
-    <string name="pairing_requesting">Eşleşme isteği gönderiliyor…</string>
-    <string name="pairing_success">Eşleşme tamamlandı. Bağlanılıyor…</string>
-    <string name="pairing_failed">Eşleşme başarısız. Tekrar denemek ister misiniz?</string>
-    <string name="retry">Tekrar dene</string>
-    <string name="message_sent">Mesaj gönderildi</string>
-    <string name="connect">Bağlan</string>
-    <string name="unknown_peer">Bilinmeyen</string>
-    <string name="online">çevrimiçi</string>
-    <string name="last_seen_unknown">son görülme bilinmiyor</string>
-    <string name="send">Gönder</string>
-    <string name="message_placeholder">Mesaj...</string>
-    <string name="back">Geri</string>
-
-    <!-- Devices / Scanning -->
-    <string name="devices_title">Cihazlar</string>
-    <string name="nearby_devices">Yakındaki Cihazlar</string>
-    <string name="scanning_devices">Cihazlar aranıyor...</string>
-    <string name="find_bluetooth_devices">Bluetooth cihazlarını bul</string>
-    <string name="scanning">Taranıyor</string>
-    <string name="advanced_scan">Gelişmiş Tara</string>
-    <string name="scanning_status_with_count">Taranıyor… Bulunan: %1$d</string>
-    <string name="scan_completed_with_count">Tarama tamamlandı. Bulunan: %1$d</string>
-    <string name="no_devices_found">Henüz cihaz bulunamadı</string>
-    <string name="empty_devices_hint">Yakındaki cihazları bulmak için Gelişmiş Tara butonuna basın</string>
-    <string name="bluetooth_off">Bluetooth Kapalı</string>
-    <string name="bluetooth_off_hint">Cihazları bulmak için Bluetooth\'u açmanız gerekiyor</string>
-    <string name="open_bluetooth">Bluetooth\'u Aç</string>
-    <string name="calibration">Kalibrasyon</string>
-    <string name="calibration_title">Mesafe Kalibrasyonu</string>
-    <string name="apply">Uygula</string>
-    <string name="cancel">İptal</string>
-    <string name="measured_power_label">1 m RSSI (measuredPower): %1$d dBm</string>
-    <string name="path_loss_label">Yayılım katsayısı n: %1$.2f</string>
-    <string name="smoothing_alpha_label">Yumuşatma (alpha): %1$.2f</string>
-    <string name="device_content_desc">Cihaz: %1$s</string>
-
+    <!-- App Info -->
+    <string name="app_name">HayatKurtar</string>
+    <string name="app_subtitle">Emergency Mesh Network</string>
+    <string name="app_description">Offline emergency communication through mesh networking</string>
+    
+    <!-- Permissions -->
+    <string name="permission_required">Bluetooth permissions required</string>
+    <string name="permissions_reason_title">Why Bluetooth permissions are needed?</string>
+    <string name="permissions_reason_bullets">• Find nearby devices\n• Enable offline messaging\n• Speed up connection setup</string>
+    <string name="allow">Allow</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="bluetooth_off_message">Bluetooth is off. Please turn it on to continue.</string>
+    
+    <!-- General UI -->
+    <string name="back">Back</string>
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="apply">Apply</string>
+    <string name="retry">Retry</string>
+    <string name="connect">Connect</string>
+    <string name="online">online</string>
+    <string name="offline">offline</string>
+    <string name="unknown_peer">Unknown</string>
+    <string name="time_now">now</string>
+    <string name="time_minutes_suffix">m</string>
+    
+    <!-- Chat Messages -->
+    <string name="chat_empty">No messages yet</string>
+    <string name="message_placeholder">Message...</string>
+    <string name="message_sent">Message sent</string>
+    <string name="message_delivered">Delivered</string>
+    <string name="message_failed">Failed to send</string>
+    <string name="message_encrypted">🔒 Encrypted</string>
+    <string name="message_sos">🆘 SOS</string>
+    <string name="last_seen_unknown">last seen unknown</string>
+    
     <!-- Chat List -->
-    <string name="chats_title">Sohbetler</string>
-    <string name="discover_other_devices">Diğer cihazları keşfet</string>
-    <string name="chats_empty_title">Henüz sohbet yok</string>
-    <string name="chats_empty_hint">Yeni bir sohbet başlatmak için tara butonuna basın</string>
-    <string name="chat_delete">Sohbeti sil</string>
-    <string name="time_now">şimdi</string>
-    <string name="time_minutes_suffix">dk</string>
-
-    <!-- Discoverable Prompt / Permissions -->
-    <string name="prompt_discoverable_title">Keşfedilebilirliği Açın</string>
-    <string name="prompt_discoverable_desc">Uygulamanın yakınınızdaki kişileri hızlı ve güvenilir biçimde bulabilmesi için Bluetooth keşfedilebilirliğini açık tutmanız önerilir. Kapatırsanız performans etkilenebilir.</string>
-    <string name="auto_visible_each_launch">Her açılışta otomatik görünür yap</string>
-    <string name="open_recommended">Aç (Önerilen)</string>
-    <string name="later">Daha sonra</string>
-    <string name="permissions_reason_title">Bluetooth izni neden gerekli?</string>
-    <string name="permissions_reason_bullets">- Yakındaki cihazları bulmak\n- Çevrimdışı mesajlaşmayı etkinleştirmek\n- Bağlantı kurulumunu hızlandırmak</string>
-    <string name="allow">İzin ver</string>
-    <string name="open_settings">Ayarları Aç</string>
-    <string name="bluetooth_off_message">Bluetooth kapalı. Devam etmek için açınız.</string>
-
-    <!-- Device name enforcement -->
-    <string name="device_name_required_title">Cihaz adınızı belirleyin</string>
-    <string name="device_name_required_desc">Cihaz adınız, yakınınızdaki kişilerin sizi tanıyabilmesi için gereklidir. Harf ve rakam içeren anlamlı bir ad seçin.</string>
-    <string name="new_device_name_hint">Cihaz adı</string>
-    <string name="save">Kaydet</string>
-    <string name="invalid_device_name">Geçersiz ad. En az 3 karakter olmalı ve sadece harf, rakam, boşluk, - ve _ içermelidir.</string>
-    <string name="rename_device_name">Cihaz adını değiştir</string>
+    <string name="chats_title">Conversations</string>
+    <string name="chats_empty_title">No conversations yet</string>
+    <string name="chats_empty_hint">Press scan button to start a new conversation</string>
+    <string name="chat_delete">Delete conversation</string>
+    <string name="discover_other_devices">Discover other devices</string>
+    
+    <!-- Device Discovery -->
+    <string name="devices_title">Devices</string>
+    <string name="nearby_devices">Nearby Devices</string>
+    <string name="scanning_devices">Scanning for devices...</string>
+    <string name="find_bluetooth_devices">Find Bluetooth devices</string>
+    <string name="scanning">Scanning</string>
+    <string name="advanced_scan">Advanced Scan</string>
+    <string name="scanning_status_with_count">Scanning... Found: %1$d</string>
+    <string name="scan_completed_with_count">Scan completed. Found: %1$d</string>
+    <string name="no_devices_found">No devices found yet</string>
+    <string name="empty_devices_hint">Press Advanced Scan button to find nearby devices</string>
+    <string name="discover_devices_cta">Discover devices</string>
+    <string name="device_content_desc">Device: %1$s</string>
+    
+    <!-- Bluetooth State -->
+    <string name="bluetooth_off">Bluetooth Off</string>
+    <string name="bluetooth_off_hint">You need to turn on Bluetooth to find devices</string>
+    <string name="open_bluetooth">Turn on Bluetooth</string>
+    
+    <!-- Pairing -->
+    <string name="pairing_requesting">Sending pairing request...</string>
+    <string name="pairing_success">Pairing completed. Connecting...</string>
+    <string name="pairing_failed">Pairing failed. Would you like to try again?</string>
+    
+    <!-- Device Names -->
+    <string name="device_name_required_title">Set your device name</string>
+    <string name="device_name_required_desc">Your device name is required so that people nearby can identify you. Choose a meaningful name with letters and numbers.</string>
+    <string name="new_device_name_hint">Device name</string>
+    <string name="invalid_device_name">Invalid name. Must be at least 3 characters and contain only letters, numbers, spaces, - and _.</string>
+    <string name="rename_device_name">Rename device</string>
+    
+    <!-- Discoverability -->
+    <string name="prompt_discoverable_title">Enable Discoverability</string>
+    <string name="prompt_discoverable_desc">It is recommended to keep Bluetooth discoverability on so that the app can find people nearby quickly and reliably. Performance may be affected if you turn it off.</string>
+    <string name="auto_visible_each_launch">Automatically visible on each launch</string>
+    <string name="open_recommended">Open (Recommended)</string>
+    <string name="later">Later</string>
+    
+    <!-- Calibration -->
+    <string name="calibration">Calibration</string>
+    <string name="calibration_title">Distance Calibration</string>
+    <string name="measured_power_label">1m RSSI (measuredPower): %1$d dBm</string>
+    <string name="path_loss_label">Path loss exponent n: %1$.2f</string>
+    <string name="smoothing_alpha_label">Smoothing (alpha): %1$.2f</string>
+    
+    <!-- Mesh Networking -->
+    <string name="mesh_status">Mesh Status</string>
+    <string name="mesh_connected">Connected to %1$d peers</string>
+    <string name="mesh_disconnected">No mesh connections</string>
+    <string name="mesh_connecting">Establishing mesh network...</string>
+    <string name="mesh_service_running">Mesh service active</string>
+    <string name="mesh_service_stopped">Mesh service stopped</string>
+    
+    <!-- Network Status -->
+    <string name="network_strength_excellent">Excellent</string>
+    <string name="network_strength_good">Good</string>
+    <string name="network_strength_fair">Fair</string>
+    <string name="network_strength_poor">Poor</string>
+    <string name="network_hops">%1$d hops</string>
+    <string name="network_direct">Direct</string>
+    
+    <!-- Transport Types -->
+    <string name="transport_bluetooth">Bluetooth Classic</string>
+    <string name="transport_wifi_direct">Wi-Fi Direct</string>
+    <string name="transport_disconnected">Disconnected</string>
+    
+    <!-- Emergency & SOS -->
+    <string name="sos_title">Emergency SOS</string>
+    <string name="sos_message_hint">Emergency message...</string>
+    <string name="sos_send">Send SOS</string>
+    <string name="sos_sent">SOS message broadcasted</string>
+    <string name="sos_received">Emergency message received</string>
+    <string name="emergency_mode">Emergency Mode</string>
+    <string name="emergency_contact">Emergency Contact</string>
+    
+    <!-- Encryption & Security -->
+    <string name="encryption_enabled">End-to-end encryption enabled</string>
+    <string name="encryption_disabled">Encryption disabled</string>
+    <string name="key_exchange">Key Exchange</string>
+    <string name="identity_verification">Identity Verification</string>
+    <string name="qr_share_title">Share Identity Key</string>
+    <string name="qr_scan_title">Scan Identity Key</string>
+    <string name="contact_verified">Contact verified</string>
+    <string name="contact_unverified">Unverified contact</string>
+    
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="mesh_settings">Mesh Network Settings</string>
+    <string name="battery_optimization">Battery Optimization</string>
+    <string name="auto_discovery">Auto Discovery</string>
+    <string name="emergency_features">Emergency Features</string>
+    <string name="privacy_security">Privacy &amp; Security</string>
+    
+    <!-- Statistics -->
+    <string name="stats_messages_sent">Messages sent: %1$d</string>
+    <string name="stats_messages_received">Messages received: %1$d</string>
+    <string name="stats_messages_forwarded">Messages forwarded: %1$d</string>
+    <string name="stats_network_uptime">Network uptime: %1$s</string>
+    
+    <!-- Notifications -->
+    <string name="notification_mesh_service">Mesh network service</string>
+    <string name="notification_mesh_running">HayatKurtar mesh network is active</string>
+    <string name="notification_new_message">New message from %1$s</string>
+    <string name="notification_sos_received">Emergency SOS received</string>
+    <string name="notification_peer_connected">%1$s connected to network</string>
+    
+    <!-- Errors -->
+    <string name="error_connection_failed">Connection failed</string>
+    <string name="error_send_failed">Failed to send message</string>
+    <string name="error_encryption_failed">Encryption failed</string>
+    <string name="error_network_unavailable">No network connections available</string>
+    <string name="error_permission_denied">Permission denied</string>
+    <string name="error_bluetooth_disabled">Bluetooth is disabled</string>
+    <string name="error_wifi_disabled">Wi-Fi is disabled</string>
 </resources>

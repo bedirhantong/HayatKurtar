@@ -8,7 +8,6 @@ import dagger.hilt.android.HiltAndroidApp
 class HayatKurtarApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Initialize Tink once
         TinkConfig.register()
     }
 }

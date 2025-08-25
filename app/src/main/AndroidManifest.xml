@@ -11,6 +11,28 @@
     <!-- Pre-Android 12 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    
+    <!-- Wi-Fi Direct permissions -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- For Android 13+ (API 33+) -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" 
+        android:usesPermissionFlags="neverForLocation" />
+    
+    <!-- For Android 12 and below -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" 
+        android:maxSdkVersion="32" />
+    
+    <!-- Foreground service permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- Hardware features -->
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.wifi.direct" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -35,6 +57,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Mesh Network Service -->
+        <service
+            android:name="com.appvalence.hayatkurtar.data.mesh.service.MeshNetworkService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
+        
+        <!-- Legacy Bluetooth Service -->
         <service
             android:name=".data.bluetooth.HighPerformanceDiscoveryService"
             android:exported="false"

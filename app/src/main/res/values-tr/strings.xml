@@ -1,0 +1,160 @@
+<resources>
+    <!-- Uygulama Bilgileri -->
+    <string name="app_name">HayatKurtar</string>
+    <string name="app_subtitle">Acil Durum Mesh Ağı</string>
+    <string name="app_description">Mesh ağ üzerinden çevrimdışı acil durum iletişimi</string>
+    
+    <!-- İzinler -->
+    <string name="permission_required">Bluetooth izinleri gerekli</string>
+    <string name="permissions_reason_title">Bluetooth izinleri neden gerekli?</string>
+    <string name="permissions_reason_bullets">• Yakındaki cihazları bulmak\n• Çevrimdışı mesajlaşmayı etkinleştirmek\n• Bağlantı kurulumunu hızlandırmak</string>
+    <string name="allow">İzin ver</string>
+    <string name="open_settings">Ayarları Aç</string>
+    <string name="bluetooth_off_message">Bluetooth kapalı. Devam etmek için açın.</string>
+    
+    <!-- Genel UI -->
+    <string name="back">Geri</string>
+    <string name="send">Gönder</string>
+    <string name="cancel">İptal</string>
+    <string name="save">Kaydet</string>
+    <string name="apply">Uygula</string>
+    <string name="retry">Tekrar dene</string>
+    <string name="connect">Bağlan</string>
+    <string name="online">çevrimiçi</string>
+    <string name="offline">çevrimdışı</string>
+    <string name="unknown_peer">Bilinmeyen</string>
+    <string name="time_now">şimdi</string>
+    <string name="time_minutes_suffix">dk</string>
+    
+    <!-- Sohbet Mesajları -->
+    <string name="chat_empty">Henüz mesaj yok</string>
+    <string name="message_placeholder">Mesaj...</string>
+    <string name="message_sent">Mesaj gönderildi</string>
+    <string name="message_delivered">Teslim edildi</string>
+    <string name="message_failed">Gönderilemedi</string>
+    <string name="message_encrypted">🔒 Şifreli</string>
+    <string name="message_sos">🆘 SOS</string>
+    <string name="last_seen_unknown">son görülme bilinmiyor</string>
+    
+    <!-- Sohbet Listesi -->
+    <string name="chats_title">Konuşmalar</string>
+    <string name="chats_empty_title">Henüz konuşma yok</string>
+    <string name="chats_empty_hint">Yeni konuşma başlatmak için tara butonuna basın</string>
+    <string name="chat_delete">Konuşmayı sil</string>
+    <string name="discover_other_devices">Diğer cihazları keşfet</string>
+    
+    <!-- Cihaz Keşfi -->
+    <string name="devices_title">Cihazlar</string>
+    <string name="nearby_devices">Yakındaki Cihazlar</string>
+    <string name="scanning_devices">Cihazlar aranıyor...</string>
+    <string name="find_bluetooth_devices">Bluetooth cihazlarını bul</string>
+    <string name="scanning">Taranıyor</string>
+    <string name="advanced_scan">Gelişmiş Tara</string>
+    <string name="scanning_status_with_count">Taranıyor... Bulunan: %1$d</string>
+    <string name="scan_completed_with_count">Tarama tamamlandı. Bulunan: %1$d</string>
+    <string name="no_devices_found">Henüz cihaz bulunamadı</string>
+    <string name="empty_devices_hint">Yakındaki cihazları bulmak için Gelişmiş Tara butonuna basın</string>
+    <string name="discover_devices_cta">Cihazları keşfet</string>
+    <string name="device_content_desc">Cihaz: %1$s</string>
+    
+    <!-- Bluetooth Durumu -->
+    <string name="bluetooth_off">Bluetooth Kapalı</string>
+    <string name="bluetooth_off_hint">Cihazları bulmak için Bluetooth\'u açmanız gerekiyor</string>
+    <string name="open_bluetooth">Bluetooth\'u Aç</string>
+    
+    <!-- Eşleştirme -->
+    <string name="pairing_requesting">Eşleştirme isteği gönderiliyor...</string>
+    <string name="pairing_success">Eşleştirme tamamlandı. Bağlanılıyor...</string>
+    <string name="pairing_failed">Eşleştirme başarısız. Tekrar denemek ister misiniz?</string>
+    
+    <!-- Cihaz Adları -->
+    <string name="device_name_required_title">Cihaz adınızı belirleyin</string>
+    <string name="device_name_required_desc">Yakınınızdaki kişilerin sizi tanıyabilmesi için cihaz adınız gereklidir. Harf ve rakam içeren anlamlı bir ad seçin.</string>
+    <string name="new_device_name_hint">Cihaz adı</string>
+    <string name="invalid_device_name">Geçersiz ad. En az 3 karakter olmalı ve sadece harf, rakam, boşluk, - ve _ içermelidir.</string>
+    <string name="rename_device_name">Cihaz adını değiştir</string>
+    
+    <!-- Keşfedilebilirlik -->
+    <string name="prompt_discoverable_title">Keşfedilebilirliği Açın</string>
+    <string name="prompt_discoverable_desc">Uygulamanın yakınınızdaki kişileri hızlı ve güvenilir şekilde bulabilmesi için Bluetooth keşfedilebilirliğini açık tutmanız önerilir. Kapatırsanız performans etkilenebilir.</string>
+    <string name="auto_visible_each_launch">Her açılışta otomatik görünür yap</string>
+    <string name="open_recommended">Aç (Önerilen)</string>
+    <string name="later">Daha sonra</string>
+    
+    <!-- Kalibrasyon -->
+    <string name="calibration">Kalibrasyon</string>
+    <string name="calibration_title">Mesafe Kalibrasyonu</string>
+    <string name="measured_power_label">1m RSSI (measuredPower): %1$d dBm</string>
+    <string name="path_loss_label">Yayılım katsayısı n: %1$.2f</string>
+    <string name="smoothing_alpha_label">Yumuşatma (alpha): %1$.2f</string>
+    
+    <!-- Mesh Ağ -->
+    <string name="mesh_status">Mesh Durumu</string>
+    <string name="mesh_connected">%1$d eşe bağlı</string>
+    <string name="mesh_disconnected">Mesh bağlantısı yok</string>
+    <string name="mesh_connecting">Mesh ağ kuruluyor...</string>
+    <string name="mesh_service_running">Mesh hizmeti aktif</string>
+    <string name="mesh_service_stopped">Mesh hizmeti durduruldu</string>
+    
+    <!-- Ağ Durumu -->
+    <string name="network_strength_excellent">Mükemmel</string>
+    <string name="network_strength_good">İyi</string>
+    <string name="network_strength_fair">Orta</string>
+    <string name="network_strength_poor">Zayıf</string>
+    <string name="network_hops">%1$d atlama</string>
+    <string name="network_direct">Doğrudan</string>
+    
+    <!-- Taşıma Türleri -->
+    <string name="transport_bluetooth">Bluetooth Classic</string>
+    <string name="transport_wifi_direct">Wi-Fi Direct</string>
+    <string name="transport_disconnected">Bağlantı kesildi</string>
+    
+    <!-- Acil Durum & SOS -->
+    <string name="sos_title">Acil Durum SOS</string>
+    <string name="sos_message_hint">Acil durum mesajı...</string>
+    <string name="sos_send">SOS Gönder</string>
+    <string name="sos_sent">SOS mesajı yayınlandı</string>
+    <string name="sos_received">Acil durum mesajı alındı</string>
+    <string name="emergency_mode">Acil Durum Modu</string>
+    <string name="emergency_contact">Acil Durum Kişisi</string>
+    
+    <!-- Şifreleme & Güvenlik -->
+    <string name="encryption_enabled">Uçtan uca şifreleme etkin</string>
+    <string name="encryption_disabled">Şifreleme devre dışı</string>
+    <string name="key_exchange">Anahtar Değişimi</string>
+    <string name="identity_verification">Kimlik Doğrulama</string>
+    <string name="qr_share_title">Kimlik Anahtarını Paylaş</string>
+    <string name="qr_scan_title">Kimlik Anahtarını Tara</string>
+    <string name="contact_verified">Kişi doğrulandı</string>
+    <string name="contact_unverified">Doğrulanmamış kişi</string>
+    
+    <!-- Ayarlar -->
+    <string name="settings">Ayarlar</string>
+    <string name="mesh_settings">Mesh Ağ Ayarları</string>
+    <string name="battery_optimization">Batarya Optimizasyonu</string>
+    <string name="auto_discovery">Otomatik Keşif</string>
+    <string name="emergency_features">Acil Durum Özellikleri</string>
+    <string name="privacy_security">Gizlilik ve Güvenlik</string>
+    
+    <!-- İstatistikler -->
+    <string name="stats_messages_sent">Gönderilen mesaj: %1$d</string>
+    <string name="stats_messages_received">Alınan mesaj: %1$d</string>
+    <string name="stats_messages_forwarded">İletilen mesaj: %1$d</string>
+    <string name="stats_network_uptime">Ağ çalışma süresi: %1$s</string>
+    
+    <!-- Bildirimler -->
+    <string name="notification_mesh_service">Mesh ağ hizmeti</string>
+    <string name="notification_mesh_running">HayatKurtar mesh ağı aktif</string>
+    <string name="notification_new_message">%1$s\'dan yeni mesaj</string>
+    <string name="notification_sos_received">Acil durum SOS alındı</string>
+    <string name="notification_peer_connected">%1$s ağa bağlandı</string>
+    
+    <!-- Hatalar -->
+    <string name="error_connection_failed">Bağlantı başarısız</string>
+    <string name="error_send_failed">Mesaj gönderilemedi</string>
+    <string name="error_encryption_failed">Şifreleme başarısız</string>
+    <string name="error_network_unavailable">Ağ bağlantısı yok</string>
+    <string name="error_permission_denied">İzin reddedildi</string>
+    <string name="error_bluetooth_disabled">Bluetooth devre dışı</string>
+    <string name="error_wifi_disabled">Wi-Fi devre dışı</string>
+</resources>

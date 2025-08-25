@@ -1,0 +1,42 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.appvalence.hayatkurtar.data.transport.wifidirect" >
+4
+5    <uses-sdk android:minSdkVersion="24" />
+6
+7    <!-- Wi-Fi Direct permissions -->
+8    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+8-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:5:5-76
+8-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:5:22-73
+9    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+9-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:6:5-76
+9-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:6:22-73
+10    <uses-permission android:name="android.permission.INTERNET" />
+10-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:7:5-67
+10-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:7:22-64
+11
+12    <!-- For Android 13+ (API 33+) -->
+13    <uses-permission
+13-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:10:5-11:58
+14        android:name="android.permission.NEARBY_WIFI_DEVICES"
+14-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:10:22-75
+15        android:usesPermissionFlags="neverForLocation" />
+15-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:11:9-55
+16
+17    <!-- For Android 12 and below -->
+18    <uses-permission
+18-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:14:5-15:38
+19        android:name="android.permission.ACCESS_FINE_LOCATION"
+19-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:14:22-76
+20        android:maxSdkVersion="32" />
+20-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:15:9-35
+21
+22    <!-- Hardware features -->
+23    <uses-feature
+23-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:18:5-90
+24        android:name="android.hardware.wifi.direct"
+24-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:18:19-62
+25        android:required="false" />
+25-->/Users/bedirhantong/AppValence/HayatKurtar/data/transport/wifidirect/src/main/AndroidManifest.xml:18:63-87
+26
+27</manifest>

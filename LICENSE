@@ -1,0 +1,65 @@
+MIT License
+
+Copyright (c) 2024 AppValence
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Emergency Communication Disclaimer
+
+HayatKurtar is designed for emergency communication scenarios and is provided
+"AS IS" without warranty. While every effort has been made to ensure reliability,
+users should:
+
+1. Always contact official emergency services (911, 112, etc.) when possible
+2. Use HayatKurtar as supplementary communication when traditional networks fail
+3. Test the application before relying on it in emergency situations
+4. Understand that message delivery cannot be guaranteed in all circumstances
+
+The developers and contributors of HayatKurtar are not responsible for any
+consequences arising from the use or inability to use this software during
+emergency situations.
+
+---
+
+## Cryptographic Software Notice
+
+This software contains cryptographic functionality. The export and import of
+cryptographic software may be subject to regulation in some jurisdictions.
+Users are responsible for compliance with applicable laws and regulations
+regarding the use and distribution of cryptographic software.
+
+---
+
+## Third-Party Licenses
+
+This software incorporates components from third-party libraries. Please see
+the individual module dependencies for their respective licenses:
+
+- Kotlin: Apache License 2.0
+- Android Jetpack: Apache License 2.0
+- Tink Cryptography: Apache License 2.0
+- Hilt/Dagger: Apache License 2.0
+- Other dependencies: See individual module build.gradle.kts files
+
+---
+
+*HayatKurtar (حیات کرتار) means "Life Saver" - because in times of crisis, 
+communication saves lives.*

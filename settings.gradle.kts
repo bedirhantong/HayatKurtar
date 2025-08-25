@@ -21,4 +21,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "HayatKurtar"
 include(":app")
-include(":bluetooth")
+include(":presentation")
+include(":domain")
+include(":data:mesh")
+include(":data:transport:bluetooth")
+include(":data:transport:wifidirect")
+include(":core")
+include(":di")
+include(":testing")
+include(":bluetooth") // Legacy module - will be refactored
